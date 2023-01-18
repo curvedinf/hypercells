@@ -1,1 +1,1 @@
-# Django Hypercells - Infinite scroll for Querysets
+# Django Hypercells - Infinite Scroll Plugin For Querysets
