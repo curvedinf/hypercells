@@ -1,9 +1,10 @@
 import math
 
+from django.urls import path
 from django.utils import timezone
 from django.forms.models import model_to_dict
 
-from hypercells_api import models
+from hypercells_api import models, views
 
 
 def create(uid, queryset, num_pages=3, page_length=100, reload_page=6):
@@ -48,5 +49,6 @@ def view(uid, viewport_row):
 
     return qs
 
-
-# LIMIT 100 OFFSET 100
+urlpatterns = [
+    path('get/', views.get),
+]

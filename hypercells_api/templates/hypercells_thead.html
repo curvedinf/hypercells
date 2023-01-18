@@ -1,7 +1,7 @@
 {% load hypercells_tags %}
 
 <tr class="hypercells-head-tr">
-    {% for field in row.fields %}
-        <th scope="col" class="hypercells-th">{{context|verbose_name:field|title}}</th>
+    {% for field_name in field_names %}
+        <th scope="col" class="hypercells-th">{{field_name|title}}</th>
     {% endfor %}
 </tr>

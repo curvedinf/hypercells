@@ -1,9 +1,11 @@
 {% load hypercells_tags %}
 
-<table class="table table-responsive table-hover hypercells-table">
+<table class="hypercells-table table table-responsive table-hover" data-uid="{{context.uid}}">
     <thead style="position:sticky; top:0; background: white;">
-    {% hypercells_thead context row %}
+        {% hypercells_thead context %}
     </thead>
+    <tbody>
+    </tbody>
 </table>
 
 {% comment %}

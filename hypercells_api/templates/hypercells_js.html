@@ -1,7 +1,35 @@
 {% load hypercells_tags %}
 
 <script>
-window.onload = function(event) {
-    
+window.onload = function(event) {    
+    function get_tables() {
+        return document.getElementsByClassName("hypercells-table");
+    };
+    
+    function get_uid(element) {
+        return element.getAttribute("data-uid");
+    };
+    
+    function get_container(table) {
+        return table.parentNode;
+    };
+    
+    function register_scroll_events() {
+        const tables = get_tables();
+        for(i in tables) {
+            const table = tables[i];
+            console.log(table);
+            const container = get_container(table);
+            container.setAttribute("data-uid", get_uid(table));
+            container.onscroll = function() {
+                
+            };
+        }
+    };
+    
+    function load_view() {
+    }
+    
+    register_scroll_events();
 }; 
 </script>
