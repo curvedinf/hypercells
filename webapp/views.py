@@ -14,6 +14,4 @@ def index(request):
 
     context = hypercells.create(uid, qs)
 
-    #rows = serializers.serialize("python", hypercells.view(uid, 0))
-
     return render(request, "templates/index.html", {"context": context})

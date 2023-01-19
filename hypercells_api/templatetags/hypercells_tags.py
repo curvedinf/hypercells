@@ -4,17 +4,14 @@ from django.template.loader import get_template
 
 register = template.Library()
 
-# Gets the name of the passed in field on the passed in object
-@register.filter
+'''@register.filter
 def verbose_name(context, field):
     model = context.derive_model_class()
-    return 
-
+    return '''
 
 @register.inclusion_tag("hypercells_js.html")
 def hypercells_js():
     return {}
-
 
 @register.inclusion_tag("hypercells_thead.html")
 def hypercells_thead(context):

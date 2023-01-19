@@ -3,6 +3,7 @@ import math
 from django.urls import path
 from django.utils import timezone
 from django.forms.models import model_to_dict
+from django.core.serializers import serialize
 
 from hypercells_api import models, views
 
@@ -30,24 +31,27 @@ def get_page_from_row(context, row):
     return math.floor(row / context.page_length)
 
 
-def view(uid, viewport_row):
+def view(uid, viewport_row):    
     context = models.Context.objects.get(uid=uid)
-
+    context.save()
     current_page = get_page_from_row(context, viewport_row)
-
-    # get the class of the context's query
     model = context.derive_model_class()
 
     limit = context.page_length * context.num_pages
-    offset = context.data_start_page * context.page_length
+    offset = current_page * context.page_length
     sql = f"{context.query} LIMIT {limit} OFFSET {offset}"
     qs = model.objects.raw(sql)
-
-    data_list = []
-    for instance in qs:
-        data_list.append(model_to_dict(instance))
-
-    return qs
+    
+    instances = serialize('python', qs)
+    
+    pages = {}
+    
+    for i in range(0,context.num_pages):
+        page_num = current_page + i
+        page = instances[i*context.page_length : (i+1)*context.page_length]
+        pages[page_num] = page
+    
+    return pages
 
 urlpatterns = [
     path('get/', views.get),

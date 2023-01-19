@@ -4,23 +4,6 @@
     <thead style="position:sticky; top:0; background: white;">
         {% hypercells_thead context %}
     </thead>
-    <tbody>
+    <tbody class="hypercells-tbody">
     </tbody>
 </table>
-
-{% comment %}
-<table class="table table-responsive table-hover hypercells-table">
-    {% for row in rows %}
-    {% if forloop.first %}
-        <thead style="position:sticky; top:0; background: white;">
-        {% hypercells_thead context row %}
-        </thead>
-        <tbody>
-    {% endif %}
-        {% hypercells_tbody row %}
-    {% if forloop.last %}
-        </tbody>
-    {% endif %}
-    {% endfor %}
-</table>
-{% endcomment %}

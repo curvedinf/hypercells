@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 from django.core.exceptions import BadRequest
 
@@ -18,6 +20,6 @@ def get(request):
     except:
         raise BadRequest("row must be an integer value")
 
-    returned_qs = hypercells.view(uid, row)
+    pages = hypercells.view(uid, row)
 
-    return HttpResponse("Here")
+    return HttpResponse(json.dumps(pages), content_type='application/json')
