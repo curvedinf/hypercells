@@ -31,10 +31,9 @@ def get_page_from_row(context, row):
     return math.floor(row / context.page_length)
 
 
-def view(uid, viewport_row):    
+def view(uid, current_page):    
     context = models.Context.objects.get(uid=uid)
     context.save()
-    current_page = get_page_from_row(context, viewport_row)
     model = context.derive_model_class()
 
     limit = context.page_length * context.num_pages

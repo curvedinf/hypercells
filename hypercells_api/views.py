@@ -10,16 +10,16 @@ import hypercells
 
 def get(request):
     if "uid" not in request.GET:
-        raise BadRequest("uid is required")
+        raise BadRequest('"uid" GET argument is required')
     uid = request.GET["uid"]
 
-    if "row" not in request.GET:
-        raise BadRequest("row is required")
+    if "page" not in request.GET:
+        raise BadRequest('"page" GET argument is required')
     try:
-        row = int(request.GET["row"])
-    except:
-        raise BadRequest("row must be an integer value")
+        page = int(request.GET["page"])
+    except ValueError:
+        raise BadRequest('"page" GET argument must be an integer value')
 
-    pages = hypercells.view(uid, row)
+    pages = hypercells.view(uid, page)
 
     return HttpResponse(json.dumps(pages), content_type='application/json')

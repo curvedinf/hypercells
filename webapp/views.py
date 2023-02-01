@@ -8,10 +8,8 @@ import hypercells
 
 def index(request):
 
-    qs = Person.objects.all().order_by("first_name")
+    qs = Person.objects.all().order_by("first_name", "last_name")
 
-    uid = "index"
-
-    context = hypercells.create(uid, qs)
+    context = hypercells.create("index", qs)
 
     return render(request, "templates/index.html", {"context": context})

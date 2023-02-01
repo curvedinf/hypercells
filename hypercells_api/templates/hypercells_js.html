@@ -1,42 +1,90 @@
 {% load hypercells_tags %}
 
 <script>
-window.onload = function(event) {    
-    function get_tables() {
-        return document.getElementsByClassName("hypercells-table");
+window.onload = function(event) {
+    const HC_URL_PREFIX = '/{{url_prefix}}/';
+    
+    function hc_get_tables() {
+        return document.getElementsByClassName('hypercells-table');
     };
     
-    function get_uid(element) {
-        return element.getAttribute("data-uid");
+    function hc_get_uid(element) {
+        return element.getAttribute('data-hypercells-uid');
     };
     
-    function get_container(table) {
+    function hc_set_uid(element, uid) {
+        element.setAttribute('data-hypercells-uid', uid);
+    };
+    
+    function hc_get_container(table) {
         return table.parentNode;
     };
     
-    function register_scroll_events(tables) {
-        for(i in tables) {
-            const table = tables[i];
-            console.log(table);
-            const container = get_container(table);
-            if(container === undefined) {
-                continue;
+    function hc_create_page(page, page_num) {
+        let new_page = document.createElement('tbody');
+        new_page.setAttribute('data-hypercells-page-num', page_num);
+        new_page.classList.add('hypercells-page');
+        for(const row_num in page) {
+            const row = page[row_num];
+            let tr = document.createElement('tr');
+            tr.setAttribute('data-hypercells-row-pk', row.pk);
+            tr.classList.add('hypercells-tr');
+            for(field_name in row.fields) {
+                let td = document.createElement('td');
+                td.setAttribute('data-hypercells-column', field_name);
+                td.classList.add('hypercells-td');
+                td.textContent = row.fields[field_name];
+                tr.appendChild(td);
             }
-            console.log(container);
-            container.setAttribute("data-uid", get_uid(table));
-            container.onscroll = function() {
-                
-            };
+            new_page.appendChild(tr);
         }
-    };
-    
-    function initialize_views() {
-        const tables = get_tables();
-        register_scroll_events(tables);
+        return new_page;
     }
     
-    initialize_views();
-}; 
+    function hc_get_view(table, uid, page) {
+        fetch(HC_URL_PREFIX+'get/?uid='+uid+'&page='+page)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(pages) {
+                for(const page_num in pages) {
+                    const page = pages[page_num];
+                    let new_page_el = hc_create_page(page, page_num);
+                    let last_page_el = table.querySelector('.hypercells-page:last-child');
+                    if(last_page_el == undefined) {
+                        table.querySelector('.hypercells-thead').after(new_page_el);
+                    } else {
+                        last_page_el.after(new_page_el);
+                    }
+                }
+            });
+    };
+    
+    function hc_container_scroll_event(event) {
+        const container = event.target;
+        console.log(container.scrollTop);
+        // var rect = element.getBoundingClientRect();
+        // console.log(rect.top, rect.right, rect.bottom, rect.left);
+    };
+    
+    function hc_register_scroll_event(table) {
+        const container = hc_get_container(table);
+        if(container === undefined) {
+            console.warn('Hypercells: Undefined container for ' + table);
+            return false;
+        }
+        hc_set_uid(container, hc_get_uid(table));
+        container.onscroll = hc_container_scroll_event;
+        return true;
+    };
+    
+    const tables = hc_get_tables();
+    for(const table of tables) {
+        if(!hc_register_scroll_event(table))
+            continue;
+        hc_get_view(table,hc_get_uid(table),0);
+    }
+};
 </script>
 
 <div style="display: none;">
