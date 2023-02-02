@@ -10,8 +10,8 @@ def verbose_name(context, field):
     return '''
 
 @register.inclusion_tag("hypercells_js.html")
-def hypercells_js(context, url_prefix):
-    return {"url_prefix": url_prefix, "context": context}
+def hypercells_js(url_prefix):
+    return {"url_prefix": url_prefix}
 
 @register.inclusion_tag("hypercells_table.html")
 def hypercells_table(context):

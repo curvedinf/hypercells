@@ -24,6 +24,7 @@ window.onload = function(event) {
         let new_page = document.createElement('tbody');
         new_page.setAttribute('data-hypercells-page-num', page_num);
         new_page.classList.add('hypercells-page');
+        new_page.classList.add('hypercells-page-active');
         for(const row_num in page) {
             const row = page[row_num];
             let tr = document.createElement('tr');
@@ -43,26 +44,58 @@ window.onload = function(event) {
     
     function hc_get_view(table, uid, page) {
         fetch(HC_URL_PREFIX+'get/?uid='+uid+'&page='+page)
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(pages) {
-                for(const page_num in pages) {
-                    const page = pages[page_num];
-                    let new_page_el = hc_create_page(page, page_num);
-                    let last_page_el = table.querySelector('.hypercells-page:last-child');
-                    if(last_page_el == undefined) {
-                        table.querySelector('.hypercells-thead').after(new_page_el);
-                    } else {
-                        last_page_el.after(new_page_el);
-                    }
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            const {pages, num_pages, page_length} = data;
+            table.setAttribute('data-hypercells-num-pages', num_pages);
+            table.setAttribute('data-hypercells-page-length', page_length);
+            table.setAttribute('data-hypercells-current-page-start', page);
+            for(const page_num in pages) {
+                const page = pages[page_num];
+                let new_page_el = hc_create_page(page, page_num);
+                let last_page_el = table.querySelector('.hypercells-page:last-child');
+                if(last_page_el == undefined) {
+                    table.querySelector('.hypercells-thead').after(new_page_el);
+                } else {
+                    last_page_el.after(new_page_el);
                 }
-            });
+            }
+        });
     };
     
     function hc_container_scroll_event(event) {
         const container = event.target;
-        console.log(container.scrollTop);
+        const table = container.querySelector('.hypercells-table');
+        const thead = table.querySelector('thead');
+        const num_pages = table.getAttribute('data-hypercells-num-pages');
+        const page_length = table.getAttribute('data-hypercells-page-length');
+        const current_page_start = table.getAttribute('data-hypercells-current-page-start');
+        const uid = table.getAttribute('data-hypercells-uid');
+        
+        const scroll = container.scrollTop;
+        
+        // determine which page the scroll is currently in
+        const active_pages = table.querySelectorAll('.hypercells-page-active');
+        const current_page = undefined;
+        for(page of active_pages) {
+            const top = page.offsetTop - thead.offsetHeight;
+            const bottom = page.offsetTop + page.offsetHeight - thead.offsetHeight;
+            console.log(scroll, top, bottom);
+            if(scroll >= top && scroll <= bottom) {
+                console.log(page);
+                current_page = page;
+                break;
+            }
+        }
+        
+        if(current_page == undefined)
+            return;
+        
+        const current_page_num = current_page.getAttribute('data-hypercells-page-num');
+        
+        //if(container.scrollHeight > offsetTop
         // var rect = element.getBoundingClientRect();
         // console.log(rect.top, rect.right, rect.bottom, rect.left);
     };

@@ -19,6 +19,8 @@ def get(request):
         page = int(request.GET["page"])
     except ValueError:
         raise BadRequest('"page" GET argument must be an integer value')
+    if page < 0:
+        raise BadRequest('"page" GET argument must not be negative')
 
     pages = hypercells.view(uid, page)
 
