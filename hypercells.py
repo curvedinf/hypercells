@@ -1,5 +1,6 @@
 import math
 import pickle
+import uuid
 
 from django.urls import path
 from django.utils import timezone
@@ -9,16 +10,29 @@ from django.core.serializers import serialize
 from hypercells_api import models, views
 
 
-def create(uid, queryset, num_pages=10, page_length=100, loading_edge_pages=3):
+def create(queryset, 
+    uid=None,
+    context_class="",
+    num_pages=10, 
+    page_length=100, 
+    loading_edge_pages=3,
+    displayed_fields=[],
+    hidden_fields=[]
+    ):
+    if uid is None:
+        uid = uuid.uuid4()
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={
             "model_module": f"{queryset.model.__module__}",
             "model_class": f"{queryset.model.__qualname__}",
+            "context_class": context_class,
             "query": pickle.dumps(queryset.query),
             "num_pages": num_pages,
             "page_length": page_length,
             "loading_edge_pages": loading_edge_pages,
+            "displayed_fields": displayed_fields,
+            "hidden_fields": hidden_fields,
         },
     )
     return context
@@ -44,7 +58,7 @@ def view(uid, current_page):
     total_pages = qs.count()
     qs = qs[start:end]
 
-    instances = serialize('python', qs)
+    instances = serialize('python', qs, fields=context.get_field_names())
     
     pages = {}
     
@@ -53,6 +67,7 @@ def view(uid, current_page):
         pages[current_page + i] = page
     
     data = {
+        'context_class': context.context_class,
         'total_pages': total_pages,
         'num_pages': context.num_pages,
         'page_length': context.page_length,

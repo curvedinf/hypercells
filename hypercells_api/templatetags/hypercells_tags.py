@@ -13,8 +13,12 @@ def hypercells_table(context):
     model = context.derive_model_class()
     fields = model._meta.get_fields()
     field_names = [field.verbose_name for field in fields if field.verbose_name != "ID"]
-    return {"context": context, "field_names": field_names}
+    return {"context": context, "field_names": context.get_field_verbose_names()}
 
 @register.inclusion_tag("hypercells_loader.html")
 def hypercells_loader():
+    return {}
+
+@register.inclusion_tag("hypercells_td_js.html")
+def hypercells_td_js():
     return {}

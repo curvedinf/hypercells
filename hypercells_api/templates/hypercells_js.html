@@ -20,7 +20,11 @@ window.onload = function(event) {
         return table.parentNode;
     };
     
-    function hc_replace_page(page_tbody, page) {
+    function hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el, context_class) {
+        {% hypercells_td_js %}
+    };
+    
+    function hc_replace_page(page_tbody, page, context_class) {
         page_tbody.classList.add('hypercells-page-active');
         page_tbody.classList.remove('hypercells-page-inactive');
         let row_array = [];
@@ -33,7 +37,7 @@ window.onload = function(event) {
                 let td = document.createElement('td');
                 td.setAttribute('data-hypercells-column', field_name);
                 td.classList.add('hypercells-td');
-                td.textContent = row.fields[field_name];
+                td.innerHTML = hc_generate_td_innerHTML(field_name, row.fields, td, page_tbody, context_class);
                 tr.appendChild(td);
             }
             row_array.push(tr);
@@ -42,11 +46,11 @@ window.onload = function(event) {
         return page_tbody;
     }
     
-    function hc_create_page(page, page_num) {
+    function hc_create_page(page, page_num, context_class) {
         let new_page = document.createElement('tbody');
         new_page.setAttribute('data-hypercells-page-num', page_num);
         new_page.classList.add('hypercells-page');
-        hc_replace_page(new_page, page);
+        hc_replace_page(new_page, page, context_class);
         return new_page;
     }
     
@@ -81,9 +85,15 @@ window.onload = function(event) {
             return response.json();
         })
         .then(function(data) {
-            const {pages, num_pages, page_length, total_pages, loading_edge_pages} = data;
+            const {pages, 
+                num_pages, 
+                page_length, 
+                total_pages, 
+                loading_edge_pages,
+                context_class,
+            } = data;
             
-            // set placeholders for previously loaded pages that aren't in the data or remove pages
+            // for pages outside of the new data, either set placeholders or remove
             if(old_current_page_start !== undefined) {
                 if(old_current_page_start < current_page_start) {
                     // set placeholders before the data
@@ -105,12 +115,13 @@ window.onload = function(event) {
             table.setAttribute('data-hypercells-page-length', page_length);
             table.setAttribute('data-hypercells-current-page-start', current_page_start);
             table.setAttribute('data-hypercells-loading-edge-pages', loading_edge_pages);
+            table.setAttribute('data-hypercells-context-class', context_class);
             table.setAttribute('data-hypercells-loading', false);
             for(const page_num in pages) {
                 const page = pages[page_num];
                 const existing_tbody = hc_get_page(table, page_num);
                 if(existing_tbody === null) {
-                    let new_page_el = hc_create_page(page, page_num);
+                    let new_page_el = hc_create_page(page, page_num, context_class);
                     let last_page_el = table.querySelector('.hypercells-page:last-child');
                     if(last_page_el === null) {
                         table.querySelector('.hypercells-thead').after(new_page_el);
@@ -118,7 +129,7 @@ window.onload = function(event) {
                         last_page_el.after(new_page_el);
                     }
                 } else {
-                    hc_replace_page(existing_tbody, page);
+                    hc_replace_page(existing_tbody, page, context_class);
                 }
             }
             if(container !== undefined && old_current_page_start > current_page_start) {
@@ -128,6 +139,9 @@ window.onload = function(event) {
                 // event to capture any changes while the request processed.
                 container.dispatchEvent(new CustomEvent('scroll'));
             }
+        }).catch(function(error) {
+            console.error('Hypercells error:', error);
+            table.setAttribute('data-hypercells-loading', false);
         });
     };
     

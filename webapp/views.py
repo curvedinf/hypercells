@@ -10,7 +10,7 @@ def index(request):
 
     qs = Person.objects.all().order_by("first_name", "last_name")
 
-    context = hypercells.create("index", qs)
-    context2 = hypercells.create("index2", qs)
+    context = hypercells.create(qs,displayed_fields=["first_name","last_name"])
+    context2 = hypercells.create(qs,hidden_fields=["first_name","last_name"])
 
-    return render(request, "templates/index.html", {"context": context, "context2": context})
+    return render(request, "templates/index.html", {"context": context, "context2": context2})
