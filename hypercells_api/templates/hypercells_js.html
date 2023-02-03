@@ -20,11 +20,10 @@ window.onload = function(event) {
         return table.parentNode;
     };
     
-    function hc_create_page(page, page_num) {
-        let new_page = document.createElement('tbody');
-        new_page.setAttribute('data-hypercells-page-num', page_num);
-        new_page.classList.add('hypercells-page');
-        new_page.classList.add('hypercells-page-active');
+    function hc_replace_page(page_tbody, page) {
+        page_tbody.classList.add('hypercells-page-active');
+        page_tbody.classList.remove('hypercells-page-inactive');
+        let row_array = [];
         for(const row_num in page) {
             const row = page[row_num];
             let tr = document.createElement('tr');
@@ -37,30 +36,97 @@ window.onload = function(event) {
                 td.textContent = row.fields[field_name];
                 tr.appendChild(td);
             }
-            new_page.appendChild(tr);
+            row_array.push(tr);
         }
+        page_tbody.replaceChildren(...row_array);
+        return page_tbody;
+    }
+    
+    function hc_create_page(page, page_num) {
+        let new_page = document.createElement('tbody');
+        new_page.setAttribute('data-hypercells-page-num', page_num);
+        new_page.classList.add('hypercells-page');
+        hc_replace_page(new_page, page);
         return new_page;
     }
     
-    function hc_get_view(table, uid, page) {
-        fetch(HC_URL_PREFIX+'get/?uid='+uid+'&page='+page)
+    function hc_replace_page_with_placeholder(existing_tbody) {
+        const computed_height = existing_tbody.offsetHeight;
+        existing_tbody.classList.remove('hypercells-page-active');
+        existing_tbody.classList.add('hypercells-page-inactive');
+        let tr = document.createElement('tr');
+        tr.classList.add('hypercells-placeholder-tr');
+        let td = document.createElement('td');
+        td.classList.add('hypercells-placeholder-td');
+        td.setAttribute('colspan', '100%');
+        td.style.height = computed_height+'px';
+        tr.appendChild(td);
+        const loader = document.querySelector('#hypercells-loader-prototype');
+        td.appendChild(loader.cloneNode(true));
+        existing_tbody.replaceChildren(tr);
+    }
+    
+    function hc_get_page(table, page_num) {
+        return table.querySelector('tbody[data-hypercells-page-num="'+page_num+'"]');
+    }
+    
+    function hc_get_view(table, uid, current_page_start, container) {
+        const old_current_page_start = parseInt(table.getAttribute('data-hypercells-current-page-start'));
+        if(old_current_page_start === current_page_start)
+            return;
+        
+        table.setAttribute('data-hypercells-loading', true);
+        fetch(HC_URL_PREFIX+'get/?uid='+uid+'&page='+current_page_start)
         .then(function(response) {
             return response.json();
         })
         .then(function(data) {
-            const {pages, num_pages, page_length} = data;
+            const {pages, num_pages, page_length, total_pages, loading_edge_pages} = data;
+            
+            // set placeholders for previously loaded pages that aren't in the data or remove pages
+            if(old_current_page_start !== undefined) {
+                if(old_current_page_start < current_page_start) {
+                    // set placeholders before the data
+                    for(let page_num = old_current_page_start; page_num < current_page_start; page_num++) {
+                        const existing_tbody = hc_get_page(table, page_num);
+                        hc_replace_page_with_placeholder(existing_tbody);
+                    }
+                } else {
+                    // remove pages after the data
+                    for(let page_num = current_page_start+num_pages; page_num < old_current_page_start+num_pages; page_num++) {
+                        const existing_tbody = hc_get_page(table, page_num);
+                        existing_tbody.remove();
+                    }
+                }
+            }
+            
+            table.setAttribute('data-hypercells-total-pages', total_pages);
             table.setAttribute('data-hypercells-num-pages', num_pages);
             table.setAttribute('data-hypercells-page-length', page_length);
-            table.setAttribute('data-hypercells-current-page-start', page);
+            table.setAttribute('data-hypercells-current-page-start', current_page_start);
+            table.setAttribute('data-hypercells-loading-edge-pages', loading_edge_pages);
+            table.setAttribute('data-hypercells-loading', false);
             for(const page_num in pages) {
                 const page = pages[page_num];
-                let new_page_el = hc_create_page(page, page_num);
-                let last_page_el = table.querySelector('.hypercells-page:last-child');
-                if(last_page_el == undefined) {
-                    table.querySelector('.hypercells-thead').after(new_page_el);
+                const existing_tbody = hc_get_page(table, page_num);
+                if(existing_tbody === null) {
+                    let new_page_el = hc_create_page(page, page_num);
+                    let last_page_el = table.querySelector('.hypercells-page:last-child');
+                    if(last_page_el === null) {
+                        table.querySelector('.hypercells-thead').after(new_page_el);
+                    } else {
+                        last_page_el.after(new_page_el);
+                    }
                 } else {
-                    last_page_el.after(new_page_el);
+                    hc_replace_page(existing_tbody, page);
                 }
+            }
+            if(container !== undefined && old_current_page_start > current_page_start) {
+                // if the scroll has moved since our current event,
+                // the subsequent scroll events were aborted while this
+                // request was processing. In this case, make a new scroll 
+                // event to capture any changes while the request processed.
+                container.dispatchEvent(new CustomEvent('scroll'));
             }
         });
     };
@@ -68,36 +134,45 @@ window.onload = function(event) {
     function hc_container_scroll_event(event) {
         const container = event.target;
         const table = container.querySelector('.hypercells-table');
+        const loading = table.getAttribute('data-hypercells-loading') === 'true';
+        
+        if(loading) return;
+        
         const thead = table.querySelector('thead');
-        const num_pages = table.getAttribute('data-hypercells-num-pages');
-        const page_length = table.getAttribute('data-hypercells-page-length');
-        const current_page_start = table.getAttribute('data-hypercells-current-page-start');
         const uid = table.getAttribute('data-hypercells-uid');
+        const num_pages = parseInt(table.getAttribute('data-hypercells-num-pages'));
+        const total_pages = parseInt(table.getAttribute('data-hypercells-total-pages'));
+        const page_length = parseInt(table.getAttribute('data-hypercells-page-length'));
+        const current_page_start = parseInt(table.getAttribute('data-hypercells-current-page-start'));
+        const loading_edge_pages = parseInt(table.getAttribute('data-hypercells-loading-edge-pages'));
         
         const scroll = container.scrollTop;
         
         // determine which page the scroll is currently in
-        const active_pages = table.querySelectorAll('.hypercells-page-active');
-        const current_page = undefined;
+        const active_pages = table.querySelectorAll('.hypercells-page');
+        let current_page = undefined;
         for(page of active_pages) {
             const top = page.offsetTop - thead.offsetHeight;
             const bottom = page.offsetTop + page.offsetHeight - thead.offsetHeight;
-            console.log(scroll, top, bottom);
             if(scroll >= top && scroll <= bottom) {
-                console.log(page);
                 current_page = page;
                 break;
             }
         }
         
-        if(current_page == undefined)
+        // if we couldn't find the current page for some reason, abort
+        if(current_page === undefined) {
             return;
+        }
         
-        const current_page_num = current_page.getAttribute('data-hypercells-page-num');
-        
-        //if(container.scrollHeight > offsetTop
-        // var rect = element.getBoundingClientRect();
-        // console.log(rect.top, rect.right, rect.bottom, rect.left);
+        const current_page_num = parseInt(current_page.getAttribute('data-hypercells-page-num'));
+        if(current_page_num >= current_page_start + num_pages - loading_edge_pages || 
+            current_page_num <= current_page_start + loading_edge_pages) {
+            let new_page_start = Math.floor(current_page_num - num_pages/2);
+            if(new_page_start < 0)
+                new_page_start = 0;
+            hc_get_view(table, uid, new_page_start, container);
+        }
     };
     
     function hc_register_scroll_event(table) {
@@ -121,24 +196,5 @@ window.onload = function(event) {
 </script>
 
 <div style="display: none;">
-    <svg id="hypercells-loader-prototype" class="hypercells-loader" width="100%" height="100%" version="1.1" style="border-radius: 20px">
-        <defs>
-            <linearGradient id="graywave1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop style="stop-color:#eee;stop-opacity:0.5" offset="0"/>
-              <stop style="stop-color:#ccc;stop-opacity:0.5" offset="0.5"/>
-              <stop style="stop-color:#eee;stop-opacity:0.5" offset="1.0"/>
-            </linearGradient>
-            <linearGradient id="graywave2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop style="stop-color:#ccc;stop-opacity:0.5" offset="0"/>
-              <stop style="stop-color:#eee;stop-opacity:0.5" offset="0.5"/>
-              <stop style="stop-color:#ccc;stop-opacity:0.5" offset="1.0"/>
-            </linearGradient>
-        </defs>
-        <rect id="loaderrect1" style="fill:url(#graywave1);fill-opacity:1;fill-rule:evenodd;" width="100%" height="100%" x="-200%" y="0"/>
-        <rect id="loaderrect2" style="fill:url(#graywave2);fill-opacity:1;fill-rule:evenodd;" width="100%" height="100%" x="-100%" y="0"/>
-        <rect id="loaderrect3" style="fill:url(#graywave1);fill-opacity:1;fill-rule:evenodd;" width="100%" height="100%" x="0" y="0"/>
-        <animate xlink:href="#loaderrect1" attributename="x" from="-200%" to="0%" dur="0.8s" begin="0s" fill="freeze" repeatcount="indefinite"/>
-        <animate xlink:href="#loaderrect2" attributename="x" from="-100%" to="100%" dur="0.8s" begin="0s" fill="freeze"repeatcount="indefinite"/>
-        <animate xlink:href="#loaderrect3" attributename="x" from="0%" to="200%" dur="0.8s" begin="0s" fill="freeze"repeatcount="indefinite"/>
-    </svg>
+    {% hypercells_loader %}
 </div>
