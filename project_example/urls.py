@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
 
-import hypercells
+import hypercells.lib
 
-import webapp.views
+import app_example.views
 
 urlpatterns = [
-    path("", webapp.views.index),
+    path("", app_example.views.index),
     path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
-    path("hypercells/", include(hypercells.urlpatterns)),
+    path("hypercells/", include(hypercells.lib.urlpatterns)),
 ]

@@ -3,9 +3,7 @@ import json
 from django.http import HttpResponse
 from django.core.exceptions import BadRequest
 
-from hypercells_api import models
-
-import hypercells
+from hypercells import lib
 
 
 def get(request):
@@ -22,6 +20,6 @@ def get(request):
     if page < 0:
         raise BadRequest('"page" GET argument must not be negative')
 
-    pages = hypercells.view(uid, page)
+    pages = lib.view(uid, page)
 
-    return HttpResponse(json.dumps(pages), content_type='application/json')
+    return HttpResponse(json.dumps(pages), content_type="application/json")

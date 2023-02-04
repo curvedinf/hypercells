@@ -4,9 +4,11 @@ from django.template.loader import get_template
 
 register = template.Library()
 
+
 @register.inclusion_tag("hypercells_js.html")
 def hypercells_js(url_prefix):
     return {"url_prefix": url_prefix}
+
 
 @register.inclusion_tag("hypercells_table.html")
 def hypercells_table(context):
@@ -15,9 +17,11 @@ def hypercells_table(context):
     field_names = [field.verbose_name for field in fields if field.verbose_name != "ID"]
     return {"context": context, "field_names": context.get_field_verbose_names()}
 
+
 @register.inclusion_tag("hypercells_loader.html")
 def hypercells_loader():
     return {}
+
 
 @register.inclusion_tag("hypercells_td_js.html")
 def hypercells_td_js():
