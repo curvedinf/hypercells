@@ -20,6 +20,11 @@ def create(
     displayed_fields=[],
     hidden_fields=[],
 ):
+    '''
+    Creates or replaces a hypercells context in the database. A context
+    stores the configuration for a hypercells instance, including the 
+    queryset that will drive it and other options.
+    '''
     if uid is None:
         uid = uuid.uuid4()
     context, created = models.Context.objects.update_or_create(

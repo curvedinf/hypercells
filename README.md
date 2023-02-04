@@ -1,12 +1,12 @@
 # Hypercells
 
-Infinite scroll for Django QuerySets.
+Infinite scroll for Django QuerySets
 
 *Note: Commercial use of this library via GitHub is prohibited but commercial 
 licenses are available. Hypercells is distributed on GitHub under the 
 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.*
 
-# About
+## About
 
 Hypercells allows you to easily add infinite-scrolling lists to your template-based
 Django application's user interface. Each Hypercells section consumes a QuerySet
@@ -18,10 +18,11 @@ performance for complex lookups.
 Hypercells is highly configurable. By default hypercells provides a column
 and row view, but it is configurable to meet virtually any requirement.
 
-# Quick Look
+## Quick Look
 
 Adding Hypercells to your app is as easy as dropping the hypercells app
-into your project directory, then adding a few code snippets:
+(the hypercells directory in this repository) into your project directory 
+and then adding a few code snippets:
 
 In your project `settings.py`:
 
@@ -49,26 +50,42 @@ In your app `views.py`:
 
         qs = Person.objects.all().order_by("first_name", "last_name")
 
-        context = hypercells.lib.create(qs, displayed_fields=["first_name", "last_name"])
+        context = hypercells.lib.create(qs)
 
-        return render(
-            request, "templates/index.html", {"context": context, "context2": context2}
-        )
+        return render(request, "templates/index.html", {"context": context})
 
 And finally add the template tags to your template:
 
     {% load hypercells_tags %}
 
-    <!doctype html>
-    <html lang="en">
-        <head>
-            ...
-        </head>
-        
+    <html>
+        ...
         <body>
-            <div class="col-10 mx-auto overflow-scroll" style="height: 100vh">
+            <div style="height: 100vh; width: 100vw">
                 {% hypercells_table context %}
             </div>
             {% hypercells_js "hypercells" %}
         </body>
     </html>
+
+## Python Functions
+
+### `create(queryset, uid=None, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[])`
+
+Creates or replaces a hypercells context in the database. A context stores 
+the configuration for a hypercells instance, including the queryset that 
+will drive it and other options.
+
+- `queryset`: A QuerySet or conforming object that represents the data to be displayed.
+- (optional) `uid`: A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
+because it creates a new context for each instance on every page load. If the uid is reused.
+for each user's instance, hypercells will reuse a context instead of creating a new one each time.
+- (optional) `context_class`: A string that is passed to the client javascript to aid in styling different hypercells
+instances.
+- (optional) `num_pages`: An integer value of how many pages of data to load per request
+- (optional) `page_length`: An integer value of how many rows of data to load per page.
+- (optional) `loading_edge_pages`: An integer value of how many pages in advance of the currently loaded data's edge
+for the client to begin requesting a new set of data.
+- (optional) `displayed_fields`: A list of strings that name which fields of `queryset` to display.
+- (optional) `hidden_fields`: A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
+with `displayed_fields` having priority.
