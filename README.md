@@ -59,7 +59,7 @@ And finally add the template tags to your template:
     <html>
         ...
         <body>
-            <div style="height: 100vh; width: 100vw">
+            <div style="height: 100vh; overflow-y: scroll;">
                 {% hypercells_table context %}
             </div>
             {% hypercells_js "hypercells" %}
