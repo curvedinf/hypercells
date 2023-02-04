@@ -43,18 +43,16 @@ window.onload = function(event) {
             row_array.push(tr);
         }
         page_tbody.replaceChildren(...row_array);
-        return page_tbody;
     }
     
-    function hc_create_page(page, page_num, context_class) {
+    function hc_create_page(page_num) {
         let new_page = document.createElement('tbody');
         new_page.setAttribute('data-hypercells-page-num', page_num);
         new_page.classList.add('hypercells-page');
-        hc_replace_page(new_page, page, context_class);
         return new_page;
     }
     
-    function hc_replace_page_with_placeholder(existing_tbody) {
+    function hc_replace_page_with_placeholder(existing_tbody, height=null) {
         const computed_height = existing_tbody.offsetHeight;
         existing_tbody.classList.remove('hypercells-page-active');
         existing_tbody.classList.add('hypercells-page-inactive');
@@ -63,7 +61,10 @@ window.onload = function(event) {
         let td = document.createElement('td');
         td.classList.add('hypercells-placeholder-td');
         td.setAttribute('colspan', '100%');
-        td.style.height = computed_height+'px';
+        if(height === null)
+            td.style.height = computed_height+'px';
+        else
+            td.style.height = height+'px';
         tr.appendChild(td);
         const loader = document.querySelector('#hypercells-loader-prototype');
         td.appendChild(loader.cloneNode(true));
@@ -72,6 +73,15 @@ window.onload = function(event) {
     
     function hc_get_page(table, page_num) {
         return table.querySelector('tbody[data-hypercells-page-num="'+page_num+'"]');
+    }
+    
+    function hc_insert_page_at_end(table_el, new_page_el) {
+        let last_page_el = table_el.querySelector('.hypercells-page:last-child');
+        if(last_page_el === null) {
+            table_el.querySelector('.hypercells-thead').after(new_page_el);
+        } else {
+            last_page_el.after(new_page_el);
+        }
     }
     
     function hc_get_view(table, uid, current_page_start, container) {
@@ -121,13 +131,9 @@ window.onload = function(event) {
                 const page = pages[page_num];
                 const existing_tbody = hc_get_page(table, page_num);
                 if(existing_tbody === null) {
-                    let new_page_el = hc_create_page(page, page_num, context_class);
-                    let last_page_el = table.querySelector('.hypercells-page:last-child');
-                    if(last_page_el === null) {
-                        table.querySelector('.hypercells-thead').after(new_page_el);
-                    } else {
-                        last_page_el.after(new_page_el);
-                    }
+                    let new_page_el = hc_create_page(page_num);
+                    hc_replace_page(new_page_el, page, context_class);
+                    hc_insert_page_at_end(table, new_page_el);
                 } else {
                     hc_replace_page(existing_tbody, page, context_class);
                 }
@@ -179,6 +185,7 @@ window.onload = function(event) {
             return;
         }
         
+        // If we have scrolled past the edge page, load new pages
         const current_page_num = parseInt(current_page.getAttribute('data-hypercells-page-num'));
         if(current_page_num >= current_page_start + num_pages - loading_edge_pages || 
             current_page_num <= current_page_start + loading_edge_pages) {
@@ -202,6 +209,11 @@ window.onload = function(event) {
     
     const tables = hc_get_tables();
     for(const table of tables) {
+        // Create an initial loader for each table
+        let new_page_el = hc_create_page(0);
+        hc_replace_page_with_placeholder(new_page_el, 500);
+        hc_insert_page_at_end(table, new_page_el);
+        
         if(!hc_register_scroll_event(table))
             continue;
         hc_get_view(table,hc_get_uid(table),0);
