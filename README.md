@@ -77,15 +77,17 @@ the configuration for a hypercells instance, including the queryset that
 will drive it and other options.
 
 - `queryset`: A QuerySet or conforming object that represents the data to be displayed.
-- (optional) `uid`: A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
+- `uid`: Optional. A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
 because it creates a new context for each instance on every page load. If the uid is reused.
 for each user's instance, hypercells will reuse a context instead of creating a new one each time.
-- (optional) `context_class`: A string that is passed to the client javascript to aid in styling different hypercells
+- `context_class`: Optional. A string that is passed to the client javascript to aid in styling different hypercells
 instances.
-- (optional) `num_pages`: An integer value of how many pages of data to load per request
-- (optional) `page_length`: An integer value of how many rows of data to load per page.
-- (optional) `loading_edge_pages`: An integer value of how many pages in advance of the currently loaded data's edge
+- `num_pages`: Optional. An integer value of how many pages of data to load per request
+- `page_length`: Optional. An integer value of how many rows of data to load per page.
+- `loading_edge_pages`: Optional. An integer value of how many pages in advance of the currently loaded data's edge
 for the client to begin requesting a new set of data.
-- (optional) `displayed_fields`: A list of strings that name which fields of `queryset` to display.
-- (optional) `hidden_fields`: A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
+- `displayed_fields`: Optional. A list of strings that name which fields of `queryset` to display.
+- `hidden_fields`: Optional. A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
 with `displayed_fields` having priority.
+
+
