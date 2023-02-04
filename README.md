@@ -68,9 +68,10 @@ And finally add the template tags to your template:
         </body>
     </html>
 
-## Python Functions
+## Documentation
 
-### `create(queryset, uid=None, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[])`
+### `hypercells.lib.create(queryset, uid=None, context_class="", num_pages=10, page_length=100, 
+loading_edge_pages=3, displayed_fields=[], hidden_fields=[])`
 
 Creates or replaces a hypercells context in the database. A context stores 
 the configuration for a hypercells instance, including the queryset that 
@@ -80,8 +81,8 @@ will drive it and other options.
 - `uid`: Optional. A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
 because it creates a new context for each instance on every page load. If the uid is reused.
 for each user's instance, hypercells will reuse a context instead of creating a new one each time.
-- `context_class`: Optional. A string that is passed to the client javascript to aid in styling different hypercells
-instances.
+- `context_class`: Optional. A string that is passed to the client javascript to distinguish different hypercells
+instances for styling purposes.
 - `num_pages`: Optional. An integer value of how many pages of data to load per request
 - `page_length`: Optional. An integer value of how many rows of data to load per page.
 - `loading_edge_pages`: Optional. An integer value of how many pages in advance of the currently loaded data's edge
