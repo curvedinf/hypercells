@@ -118,12 +118,20 @@ This template tag renders a django template that contains the HTML necessary to 
 a new hypercells table. Each `hypercells_table` tag must include a context created by
 `hypercells.lib.create`. Do not share contexts for multiple `hypercells_tables` tags.
 
+Additionally, the `hypercells_table` must be placed as a child of an HTML element
+capable of scrolling and generating scroll events. For this reason, if you are
+adding the table inside a div, adding `style="height: 100vh; overflow-y: scroll;"`
+or similar is required.
+
 ### `{% hypercells_js "hypercells/" %}`
 
 This template tag renders a django template that contains the javascript necessary to render
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
 The template tag takes one string, which is the urlpath root of the hypercells API
 you configured in your urls.py.
+
+`hypercells_js` is best included at the bottom of your `<body>` tag but can be placed
+anywhere a `<script>` tag can be used.
 
 ## Extending Hypercells
 
