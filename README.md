@@ -88,6 +88,6 @@ the scroll must be before the client begins requesting a new set of data.
 - `displayed_fields`: Optional. A list of strings that name which fields of `queryset` to display.
 - `hidden_fields`: Optional. A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
 with `displayed_fields` having priority.
-- css_classes : Optional. Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
-'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}` A dictionary of css classes to add to various
+- `css_classes`: Optional. Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
+'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
 elements of the table.
