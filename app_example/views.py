@@ -13,7 +13,9 @@ def index(request):
     context = hypercells.lib.create(
         qs,
         uid=hypercells.lib.create_uid_from_user(request, 'first-last'),
-        displayed_fields=["first_name", "last_name"]
+        displayed_fields=["first_name", "last_name"],
+        enforce_security=True,
+        request=request
     )
     context2 = hypercells.lib.create(
         qs, 

@@ -20,6 +20,6 @@ def get(request):
     if page < 0:
         raise BadRequest('"page" GET argument must not be negative')
 
-    pages = lib.view(uid, page)
+    pages = lib.view(uid, page, request)
 
     return HttpResponse(json.dumps(pages), content_type="application/json")

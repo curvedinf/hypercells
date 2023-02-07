@@ -2,11 +2,7 @@ import string, sys
 
 from django.db import models
 from django.utils import timezone
-
-# TODO: delete from migration
-def random_uid():
-    letters = string.ascii_lowercase
-    return "".join(random.choice(letters) for i in range(10))
+from django.conf import settings
 
 
 class Context(models.Model):
@@ -23,6 +19,13 @@ class Context(models.Model):
     displayed_fields = models.JSONField()
     hidden_fields = models.JSONField()
     css_classes = models.JSONField()
+    enforce_security = models.BooleanField()
+    generated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
     def derive_model_class(self):
         return getattr(sys.modules[str(self.model_module)], str(self.model_class))
@@ -51,6 +54,13 @@ class Context(models.Model):
     def get_field_names(self):
         fields = self.get_fields()
         return [field.name for field in fields]
+
+    def has_permissions(self, request):
+        if not self.enforce_security:
+            return True
+        if self.generated_by == None: # anonymous users
+            return True
+        return self.generated_by == request.user
 
     def __str__(self):
         return self.uid

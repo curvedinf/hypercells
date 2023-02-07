@@ -6,6 +6,7 @@ from django.urls import path
 from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.core.serializers import serialize
+from django.core.exceptions import SuspiciousOperation
 
 from hypercells import models, views
 
@@ -29,6 +30,8 @@ def create(
         'tbody_tr': '',
         'tbody_td': '',
     },
+    enforce_security=False,
+    request=None,
 ):
     '''
     Creates or replaces a hypercells context in the database. A context
@@ -37,6 +40,14 @@ def create(
     '''
     if uid is None:
         uid = uuid.uuid4()
+    
+    generated_by = None
+    if enforce_security:
+        if request is None:
+            raise ValueError("If enforce_security is enabled, request must be provided")
+        if not request.user.is_anonymous:
+            generated_by = request.user
+    
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={
@@ -51,6 +62,8 @@ def create(
             "hidden_fields": hidden_fields,
             "css_classes": css_classes,
             "display_thead": display_thead,
+            "enforce_security": enforce_security,
+            "generated_by": generated_by,
         },
     )
     return context
@@ -65,12 +78,16 @@ def get_page_from_row(context, row):
     return math.floor(row / context.page_length)
 
 
-def view(uid, current_page):
+def view(uid, current_page, request):
     if current_page < 0:
         raise ValueError("current_page must not be negative")
 
     context = models.Context.objects.get(uid=uid)
     context.save()
+    
+    if not context.has_permissions(request):
+        raise SuspiciousOperation("User does not have access to hypercells context")
+    
     model = context.derive_model_class()
 
     length = context.page_length * context.num_pages

@@ -69,7 +69,7 @@ And finally add the template tags to your template:
 
 ## Documentation
 
-### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[], css_classes={...})`
+### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[], css_classes={...}, enforce_security=False, request=None,)`
 
 Creates or replaces a hypercells context in the database. A context stores 
 the configuration for a hypercells instance, including the queryset that 
@@ -93,13 +93,19 @@ with `displayed_fields` having priority.
 - `css_classes`: Optional. Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
 'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
 elements of the table.
+- `enforce_security`: Optional. If enabled, the API will only respond to requests from the user which created
+a context.
+- `request`: Optional. If enforce_security is enabled, this argument is required. It is used to get the
+current user to store in the context. Note: Contexts owned by anonymous users will still have API security
+disabled, since it is impossible to authenticate them.
 
 ### `hypercells.lib.create_uid_from_user(request, location_identifier)`
 
 Creates a `uid` for use with `create(...)` that is based off the Django request's currently logged in user.
 If no user is logged in, it returns `None`, which will generate a random uuid in `create`.
 The location_identifier is a unique string for every uniquely-configured hypercells instance on your
-site.
+site. Using this function to generate uids allows hypercells to reuse contexts and
+prevent cluttering your database.
 
 ### `{% hypercells_table context %}`
 
