@@ -14,6 +14,7 @@ def create(
     queryset,
     uid=None,
     context_class="",
+    display_thead=True,
     num_pages=10,
     page_length=100,
     loading_edge_pages=3,
@@ -49,11 +50,16 @@ def create(
             "displayed_fields": displayed_fields,
             "hidden_fields": hidden_fields,
             "css_classes": css_classes,
-            #"css_styles": css_styles,
+            "display_thead": display_thead,
         },
     )
     return context
 
+def create_uid_from_user(request, location_identifier):
+    if request.user.is_authenticated:
+        return f'{request.user.pk}~{location_identifier}'
+    else:
+        return None
 
 def get_page_from_row(context, row):
     return math.floor(row / context.page_length)

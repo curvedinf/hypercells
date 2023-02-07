@@ -8,11 +8,12 @@ licenses are available. Hypercells is distributed on GitHub under the
 
 ## About
 
-Hypercells allows you to easily add infinite-scrolling lists to your template-based
-Django application's user interface. Each Hypercells section or "context" consumes 
-a QuerySet and automatically configures itself to display results. As a 
-user scrolls, the interface is updated behind the scenes by an automatically-configured
-REST API. Care has been given to optimize the way Hypercells uses a QuerySet to maximize 
+Hypercells allows you to easily add infinite-scrolling lists based on
+QuerySet data to your template-based Django application's user interface. 
+Each Hypercells section or "context" consumes a QuerySet and automatically 
+configures itself to display results. As a user scrolls, the interface is 
+updated behind the scenes by an automatically-configured REST API. Care 
+has been given to optimize the way Hypercells uses a QuerySet to maximize 
 performance for complex lookups. By default Hypercells provides a column and row 
 view, but it is configurable to meet virtually any requirement.
 
@@ -68,7 +69,7 @@ And finally add the template tags to your template:
 
 ## Documentation
 
-### `hypercells.lib.create(queryset, uid=None, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[], css_classes={...})`
+### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[], css_classes={...})`
 
 Creates or replaces a hypercells context in the database. A context stores 
 the configuration for a hypercells instance, including the queryset that 
@@ -79,6 +80,7 @@ per view and template.
 - `uid`: Optional. A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
 because it creates a new context for each instance on every page load. If the uid is reused
 for each user's instance, hypercells will reuse contexts instead of creating a new one each time.
+- `display_thead`: Optional. A boolean value that enables or disables the header row.
 - `context_class`: Optional. A string that is passed to the client javascript to distinguish different hypercells
 instances for styling purposes.
 - `num_pages`: Optional. An integer value of how many pages of data to load per request
@@ -92,6 +94,13 @@ with `displayed_fields` having priority.
 'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
 elements of the table.
 
+### `hypercells.lib.create_uid_from_user(request, location_identifier)`
+
+Creates a `uid` for use with `create(...)` that is based off the Django request's currently logged in user.
+If no user is logged in, it returns `None`, which will generate a random uuid in `create`.
+The location_identifier is a unique string for every uniquely-configured hypercells instance on your
+site.
+
 ### `{% hypercells_table context %}`
 
 This template tag renders a django template that contains the HTML necessary to render
@@ -104,3 +113,9 @@ This template tag renders a django template that contains the javascript necessa
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
 The template tag takes one string, which is the urlpath root of the hypercells API
 you configured in your urls.py.
+
+## Extending Hypercells
+
+The default hypercells interface is display-only and has no interactive features
+other than scrolling. It is possible to add interactivity and other features
+to hypercells by extending the built-in templates.
