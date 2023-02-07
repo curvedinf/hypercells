@@ -94,10 +94,10 @@ with `displayed_fields` having priority.
 'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
 elements of the table.
 - `enforce_security`: Optional. If enabled, the API will only respond to requests from the user which created
-a context.
+a context. Note: Contexts owned by anonymous users will have API security disabled, 
+since it is impossible to authenticate them.
 - `request`: Optional. If enforce_security is enabled, this argument is required. It is used to get the
-current user to store in the context. Note: Contexts owned by anonymous users will still have API security
-disabled, since it is impossible to authenticate them.
+current user to store in the context.
 
 ### `hypercells.lib.create_uid_from_user(request, location_identifier)`
 
