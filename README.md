@@ -77,9 +77,9 @@ will drive it and other options. It is ok to create and display multiple context
 per view and template.
 
 - `queryset`: A QuerySet or conforming object that represents the data to be displayed.
-- `uid`: Optional. A string that identifies this hypercells context. Default: a random uuid. Default behavior is unoptimal
-because it creates a new context for each instance on every page load. If the uid is reused
-for each user's instance, hypercells will reuse contexts instead of creating a new one each time.
+- `uid`: Optional. A string that identifies this hypercells context. If `None` is provided, a random
+uid is generated. Default behavior is unoptimal because it creates a new context for each instance on every page load.
+For this reason, it is recommended to use `create_uid_from_user` described below.
 - `display_thead`: Optional. A boolean value that enables or disables the header row.
 - `context_class`: Optional. A string that is passed to the client javascript to distinguish different hypercells
 instances for styling purposes.
@@ -103,9 +103,14 @@ disabled, since it is impossible to authenticate them.
 
 Creates a `uid` for use with `create(...)` that is based off the Django request's currently logged in user.
 If no user is logged in, it returns `None`, which will generate a random uuid in `create`.
-The location_identifier is a unique string for every uniquely-configured hypercells instance on your
-site. Using this function to generate uids allows hypercells to reuse contexts and
+The `location_identifier` should be a unique string for every uniquely-configured hypercells 
+instance on your site. Using this function to generate uids allows hypercells to reuse contexts and
 prevent cluttering your database.
+
+### `hypercells.lib.delete_old_contexts(days=0, hours=8, minutes=0)`
+
+Deletes all contexts older than the provided arguments. This should be used in a regularly occurring task
+so old contexts do not accumulate.
 
 ### `{% hypercells_table context %}`
 

@@ -1,6 +1,7 @@
 import math
 import pickle
 import uuid
+from datetime import datetime, timedelta
 
 from django.urls import path
 from django.utils import timezone
@@ -77,7 +78,6 @@ def create_uid_from_user(request, location_identifier):
 def get_page_from_row(context, row):
     return math.floor(row / context.page_length)
 
-
 def view(uid, current_page, request):
     if current_page < 0:
         raise ValueError("current_page must not be negative")
@@ -118,6 +118,9 @@ def view(uid, current_page, request):
 
     return data
 
+def delete_old_contexts(days=0, hours=8, minutes=0):
+    time_ago = datetime.now() - timedelta(days=days, hours=hours, minutes=minutes)
+    models.Context.objects.filter(timestamp__lte=time_ago).delete()
 
 urlpatterns = [
     path("get/", views.get),

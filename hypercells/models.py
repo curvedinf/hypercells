@@ -15,7 +15,6 @@ class Context(models.Model):
     num_pages = models.IntegerField()
     page_length = models.IntegerField()
     loading_edge_pages = models.IntegerField()
-    timestamp = models.DateTimeField(auto_now=True)
     displayed_fields = models.JSONField()
     hidden_fields = models.JSONField()
     css_classes = models.JSONField()
@@ -26,6 +25,7 @@ class Context(models.Model):
         blank=True,
         null=True
     )
+    timestamp = models.DateTimeField(auto_now=True)
 
     def derive_model_class(self):
         return getattr(sys.modules[str(self.model_module)], str(self.model_class))
