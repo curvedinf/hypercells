@@ -21,6 +21,7 @@ class Context(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     displayed_fields = models.JSONField()
     hidden_fields = models.JSONField()
+    css_classes = models.JSONField()
 
     def derive_model_class(self):
         return getattr(sys.modules[str(self.model_module)], str(self.model_class))

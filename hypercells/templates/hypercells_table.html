@@ -1,10 +1,10 @@
 {% load hypercells_tags %}
 
-<table class="hypercells-table table table-responsive table-hover" data-hypercells-uid="{{context.uid}}" data-hypercells-loading="true">
-    <thead class="hypercells-thead" style="position:sticky; top:0; background: white;">
-        <tr class="hypercells-head-tr">
+<table class="hypercells-table {{context.css_classes.table}}" data-hypercells-uid="{{context.uid}}" data-hypercells-loading="true">
+    <thead class="hypercells-thead {{context.css_classes.thead}}" style="position:sticky; top:0; background: white;">
+        <tr class="hypercells-head-tr {{context.css_classes.thead_tr}}">
             {% for field_name in field_names %}
-                <th scope="col" class="hypercells-th">{{field_name|title}}</th>
+                <th scope="col" class="hypercells-th {{context.css_classes.thead_th}}">{{field_name|title}}</th>
             {% endfor %}
         </tr>
     </thead>

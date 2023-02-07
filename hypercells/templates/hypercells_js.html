@@ -6,25 +6,39 @@ window.onload = function(event) {
     
     function hc_get_tables() {
         return document.getElementsByClassName('hypercells-table');
-    };
+    }
     
     function hc_get_uid(element) {
         return element.getAttribute('data-hypercells-uid');
-    };
+    }
     
     function hc_set_uid(element, uid) {
         element.setAttribute('data-hypercells-uid', uid);
-    };
+    }
     
     function hc_get_container(table) {
         return table.parentNode;
-    };
+    }
     
-    function hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el, context_class) {
+    function hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el, context_class, css_classes) {
         {% hypercells_td_js %}
-    };
+    }
     
-    function hc_replace_page(page_tbody, page, context_class) {
+    function hc_split_css_classes(css_classes_string) {
+        return css_classes_string.split(' ');
+    }
+    
+    function hc_apply_css_classes(element, type, css_classes) {
+        if(type in css_classes) {
+            const type_classes = hc_split_css_classes(css_classes[type]);
+            for(type_class of type_classes) {
+                if(type_class !== '')
+                    element.classList.add(type_class);
+            }
+        }
+    }
+    
+    function hc_replace_page(page_tbody, page, context_class, css_classes) {
         page_tbody.classList.add('hypercells-page-active');
         page_tbody.classList.remove('hypercells-page-inactive');
         let row_array = [];
@@ -33,11 +47,13 @@ window.onload = function(event) {
             let tr = document.createElement('tr');
             tr.setAttribute('data-hypercells-row-pk', row.pk);
             tr.classList.add('hypercells-tr');
+            hc_apply_css_classes(tr, 'tbody_tr', css_classes);
             for(field_name in row.fields) {
                 let td = document.createElement('td');
                 td.setAttribute('data-hypercells-column', field_name);
                 td.classList.add('hypercells-td');
-                td.innerHTML = hc_generate_td_innerHTML(field_name, row.fields, td, page_tbody, context_class);
+                hc_apply_css_classes(td, 'tbody_td', css_classes);
+                td.innerHTML = hc_generate_td_innerHTML(field_name, row.fields, td, page_tbody, context_class, css_classes);
                 tr.appendChild(td);
             }
             row_array.push(tr);
@@ -45,10 +61,12 @@ window.onload = function(event) {
         page_tbody.replaceChildren(...row_array);
     }
     
-    function hc_create_page(page_num) {
+    function hc_create_page(page_num, css_classes={}) {
         let new_page = document.createElement('tbody');
         new_page.setAttribute('data-hypercells-page-num', page_num);
         new_page.classList.add('hypercells-page');
+        hc_apply_css_classes(new_page, 'tbody', css_classes);
+        
         return new_page;
     }
     
@@ -101,6 +119,7 @@ window.onload = function(event) {
                 total_pages, 
                 loading_edge_pages,
                 context_class,
+                css_classes,
             } = data;
             
             // for pages outside of the new data, either set placeholders or remove
@@ -131,11 +150,11 @@ window.onload = function(event) {
                 const page = pages[page_num];
                 const existing_tbody = hc_get_page(table, page_num);
                 if(existing_tbody === null) {
-                    let new_page_el = hc_create_page(page_num);
-                    hc_replace_page(new_page_el, page, context_class);
+                    let new_page_el = hc_create_page(page_num, css_classes);
+                    hc_replace_page(new_page_el, page, context_class, css_classes);
                     hc_insert_page_at_end(table, new_page_el);
                 } else {
-                    hc_replace_page(existing_tbody, page, context_class);
+                    hc_replace_page(existing_tbody, page, context_class, css_classes);
                 }
             }
             if(container !== undefined && old_current_page_start > current_page_start) {
@@ -149,7 +168,7 @@ window.onload = function(event) {
             console.error('Hypercells error:', error);
             table.setAttribute('data-hypercells-loading', false);
         });
-    };
+    }
     
     function hc_container_scroll_event(event) {
         const container = event.target;
@@ -194,7 +213,7 @@ window.onload = function(event) {
                 new_page_start = 0;
             hc_get_view(table, uid, new_page_start, container);
         }
-    };
+    }
     
     function hc_register_scroll_event(table) {
         const container = hc_get_container(table);
@@ -205,7 +224,7 @@ window.onload = function(event) {
         hc_set_uid(container, hc_get_uid(table));
         container.onscroll = hc_container_scroll_event;
         return true;
-    };
+    }
     
     const tables = hc_get_tables();
     for(const table of tables) {

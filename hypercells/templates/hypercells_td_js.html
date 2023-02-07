@@ -1,10 +1,10 @@
 {% load hypercells_tags %}
 
-// This file allows you to write custom cell html.
+// This javascript is inserted inside hypercells_js.html in
+// hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el, context_class, css_classes)
 
-// This javascript is inserted into hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el)
-// inside hypercells_js.html.
+// It must return a string that will be used as the innerHTML in every data cell
 
-// You can also modify the td and tbody elements using the provided references.
+// Consider this function as the main way to make data interactive.
 
 return fields[field_name];

@@ -19,6 +19,15 @@ def create(
     loading_edge_pages=3,
     displayed_fields=[],
     hidden_fields=[],
+    css_classes={
+        'table': 'table table-responsive table-hover',
+        'thead': '',
+        'thead_tr': '',
+        'thead_th': '',
+        'tbody': '',
+        'tbody_tr': '',
+        'tbody_td': '',
+    },
 ):
     '''
     Creates or replaces a hypercells context in the database. A context
@@ -39,6 +48,8 @@ def create(
             "loading_edge_pages": loading_edge_pages,
             "displayed_fields": displayed_fields,
             "hidden_fields": hidden_fields,
+            "css_classes": css_classes,
+            #"css_styles": css_styles,
         },
     )
     return context
@@ -78,6 +89,7 @@ def view(uid, current_page):
         "num_pages": context.num_pages,
         "page_length": context.page_length,
         "loading_edge_pages": context.loading_edge_pages,
+        "css_classes": context.css_classes,
         "pages": pages,
     }
 
