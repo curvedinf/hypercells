@@ -62,7 +62,7 @@ And finally add the template tags to your template:
             <div style="height: 100vh; overflow-y: scroll;">
                 {% hypercells_table context %}
             </div>
-            {% hypercells_js "hypercells" %}
+            {% hypercells_js "hypercells/" %}
         </body>
     </html>
 
@@ -98,7 +98,7 @@ This template tag renders a django template that contains the HTML necessary to 
 a new hypercells table. Each `hypercells_table` tag must include a context created by
 `hypercells.lib.create`. Do not share contexts for multiple `hypercells_tables` tags.
 
-### `{% hypercells_js "hypercells" %}`
+### `{% hypercells_js "hypercells/" %}`
 
 This template tag renders a django template that contains the javascript necessary to render
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
