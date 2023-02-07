@@ -91,3 +91,16 @@ with `displayed_fields` having priority.
 - `css_classes`: Optional. Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
 'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
 elements of the table.
+
+### `{% hypercells_table context %}`
+
+This template tag renders a django template that contains the HTML necessary to render
+a new hypercells table. Each `hypercells_table` tag must include a context created by
+`hypercells.lib.create`. Do not share contexts for multiple `hypercells_tables` tags.
+
+### `{% hypercells_js "hypercells" %}`
+
+This template tag renders a django template that contains the javascript necessary to render
+all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
+The template tag takes one string, which is the urlpath root of the hypercells API
+you configured in your urls.py.
