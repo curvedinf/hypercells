@@ -11,6 +11,26 @@ from django.core.exceptions import SuspiciousOperation
 
 from hypercells import models, views
 
+HC_TEMPLATE_JS = "js"
+HC_TEMPLATE_TABLE = "table"
+HC_TEMPLATE_LOADER = "loader"
+HC_TEMPLATE_TD_JS = "td_js"
+
+HC_DEFAULT_TEMPLATES = {
+    HC_TEMPLATE_JS: "hypercells_js.html",
+    HC_TEMPLATE_TABLE: "hypercells_table.html",
+    HC_TEMPLATE_LOADER: "hypercells_loader.html",
+    HC_TEMPLATE_TD_JS: "hypercells_td_js.html",
+}
+
+
+def get_template_from_context(context, template_name):
+    if context is None:
+        return HC_DEFAULT_TEMPLATES[template_name]
+    template_filename = context.templates.get(template_name, None)
+    if template_filename is None or template_filename == "":
+        return HC_DEFAULT_TEMPLATES[template_name]
+
 
 def create(
     queryset,
@@ -23,32 +43,38 @@ def create(
     displayed_fields=[],
     hidden_fields=[],
     css_classes={
-        'table': 'table table-responsive table-hover',
-        'thead': '',
-        'thead_tr': '',
-        'thead_th': '',
-        'tbody': '',
-        'tbody_tr': '',
-        'tbody_td': '',
+        "table": "table table-responsive table-hover",
+        "thead": "",
+        "thead_tr": "",
+        "thead_th": "",
+        "tbody": "",
+        "tbody_tr": "",
+        "tbody_td": "",
     },
     enforce_security=False,
     request=None,
+    templates={
+        HC_TEMPLATE_JS: None,
+        HC_TEMPLATE_TABLE: None,
+        HC_TEMPLATE_LOADER: None,
+        HC_TEMPLATE_TD_JS: None,
+    },
 ):
-    '''
+    """
     Creates or replaces a hypercells context in the database. A context
-    stores the configuration for a hypercells instance, including the 
+    stores the configuration for a hypercells instance, including the
     queryset that will drive it and other options.
-    '''
+    """
     if uid is None:
         uid = uuid.uuid4()
-    
+
     generated_by = None
     if enforce_security:
         if request is None:
             raise ValueError("If enforce_security is enabled, request must be provided")
         if not request.user.is_anonymous:
             generated_by = request.user
-    
+
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={
@@ -65,18 +91,22 @@ def create(
             "display_thead": display_thead,
             "enforce_security": enforce_security,
             "generated_by": generated_by,
+            "templates": templates,
         },
     )
     return context
 
+
 def create_uid_from_user(request, location_identifier):
     if request.user.is_authenticated:
-        return f'{request.user.pk}~{location_identifier}'
+        return f"{request.user.pk}~{location_identifier}"
     else:
         return None
 
+
 def get_page_from_row(context, row):
     return math.floor(row / context.page_length)
+
 
 def view(uid, current_page, request):
     if current_page < 0:
@@ -84,10 +114,10 @@ def view(uid, current_page, request):
 
     context = models.Context.objects.get(uid=uid)
     context.save()
-    
+
     if not context.has_permissions(request):
         raise SuspiciousOperation("User does not have access to hypercells context")
-    
+
     model = context.derive_model_class()
 
     length = context.page_length * context.num_pages
@@ -118,9 +148,11 @@ def view(uid, current_page, request):
 
     return data
 
+
 def delete_old_contexts(days=0, hours=8, minutes=0):
     time_ago = datetime.now() - timedelta(days=days, hours=hours, minutes=minutes)
     models.Context.objects.filter(timestamp__lte=time_ago).delete()
+
 
 urlpatterns = [
     path("get/", views.get),

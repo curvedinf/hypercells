@@ -20,12 +20,10 @@ class Context(models.Model):
     css_classes = models.JSONField()
     enforce_security = models.BooleanField()
     generated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
     )
     timestamp = models.DateTimeField(auto_now=True)
+    templates = models.JSONField()
 
     def derive_model_class(self):
         return getattr(sys.modules[str(self.model_module)], str(self.model_class))
@@ -58,7 +56,7 @@ class Context(models.Model):
     def has_permissions(self, request):
         if not self.enforce_security:
             return True
-        if self.generated_by == None: # anonymous users
+        if self.generated_by == None:  # anonymous users
             return True
         return self.generated_by == request.user
 
