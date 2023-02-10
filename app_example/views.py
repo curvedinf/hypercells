@@ -30,6 +30,7 @@ def multiple(request):
         qs,
         uid=hypercells.lib.create_uid_from_user(request, "ignore-first-last"),
         hidden_fields=["first_name", "last_name"],
+        transmitted_fields=["first_name", "last_name"],
         display_thead=False,
     )
 

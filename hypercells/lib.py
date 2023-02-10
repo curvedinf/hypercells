@@ -44,6 +44,7 @@ def create(
     loading_edge_pages=3,
     displayed_fields=[],
     hidden_fields=[],
+    transmitted_fields=[],
     css_classes={
         "table": "table table-responsive table-hover",
         "thead": "",
@@ -90,6 +91,7 @@ def create(
             "loading_edge_pages": loading_edge_pages,
             "displayed_fields": displayed_fields,
             "hidden_fields": hidden_fields,
+            "transmitted_fields": transmitted_fields,
             "css_classes": css_classes,
             "display_thead": display_thead,
             "enforce_security": enforce_security,
@@ -146,6 +148,7 @@ def view(uid, current_page, request):
         "page_length": context.page_length,
         "loading_edge_pages": context.loading_edge_pages,
         "css_classes": context.css_classes,
+        "transmitted_fields": context.transmitted_fields,
         "pages": pages,
     }
 

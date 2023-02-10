@@ -17,6 +17,7 @@ class Context(models.Model):
     loading_edge_pages = models.IntegerField()
     displayed_fields = models.JSONField()
     hidden_fields = models.JSONField()
+    transmitted_fields = models.JSONField()
     css_classes = models.JSONField()
     enforce_security = models.BooleanField()
     generated_by = models.ForeignKey(
@@ -31,19 +32,31 @@ class Context(models.Model):
     def get_fields(self):
         model = self.derive_model_class()
         fields = model._meta.get_fields()
+        return_fields = None
         if len(self.displayed_fields) > 0:
-            return [
+            return_fields = [
                 field
                 for field in fields
                 if (field.name in self.displayed_fields) and field.name != "id"
             ]
-        if len(self.hidden_fields) > 0:
-            return [
+        elif len(self.hidden_fields) > 0:
+            return_fields = [
                 field
                 for field in fields
                 if (field.name not in self.hidden_fields) and field.name != "id"
             ]
-        return [field for field in fields if field.name != "id"]
+        else:
+            return_fields = [field for field in fields if field.name != "id"]
+        
+        if len(self.transmitted_fields) > 0:
+            extra_fields = [
+                field
+                for field in fields
+                if (field.name in self.transmitted_fields) and (field.name not in return_fields)
+            ]
+            return_fields.extend(extra_fields)
+        
+        return return_fields
 
     def get_field_verbose_names(self):
         fields = self.get_fields()

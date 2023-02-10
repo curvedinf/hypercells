@@ -69,7 +69,7 @@ And finally add the template tags to your template:
 
 ## Documentation
 
-### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[...], hidden_fields=[...], css_classes={...}, enforce_security=False, request=None, templates={...})`
+### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[...], hidden_fields=[...], transmitted_fields=[...], css_classes={...}, enforce_security=False, request=None, templates={...})`
 
 Creates or replaces a hypercells context in the database. A context stores 
 the configuration for a hypercells instance, including the queryset that 
@@ -90,6 +90,9 @@ the scroll must be before the client begins requesting a new set of data.
 - `displayed_fields`: Optional. A list of strings that name which fields of `queryset` to display.
 - `hidden_fields`: Optional. A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
 with `displayed_fields` having priority.
+- `transmitted_fields`: Optional. A list of strings that name which fields of `queryset` should be sent to the client but not displayed. This
+setting takes priority over `displayed_fields` and `hidden_fields`. It is useful for implementing detailed views accessible by clicking
+on a row or field.
 - `css_classes`: Optional. A dictionary of css classes to add to various elements of the table. 
 Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
 'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. 

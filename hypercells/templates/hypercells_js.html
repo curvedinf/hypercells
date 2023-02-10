@@ -42,7 +42,7 @@ window.onload = function(event) {
         }
     }
     
-    function hc_replace_page(page_tbody, page, context_class, css_classes) {
+    function hc_replace_page(page_tbody, page, context_class, css_classes, transmitted_fields) {
         page_tbody.classList.add('hypercells-page-active');
         page_tbody.classList.remove('hypercells-page-inactive');
         let row_array = [];
@@ -53,6 +53,8 @@ window.onload = function(event) {
             tr.classList.add('hypercells-tr');
             hc_apply_css_classes(tr, 'tbody_tr', css_classes);
             for(field_name in row.fields) {
+                if(transmitted_fields.includes(field_name))
+                    continue;
                 let td = document.createElement('td');
                 td.setAttribute('data-hypercells-column', field_name);
                 td.classList.add('hypercells-td');
@@ -125,6 +127,7 @@ window.onload = function(event) {
                 loading_edge_pages,
                 context_class,
                 css_classes,
+                transmitted_fields,
             } = data;
             
             // for pages outside of the new data, either set placeholders or remove
@@ -150,16 +153,17 @@ window.onload = function(event) {
             table.setAttribute('data-hypercells-current-page-start', current_page_start);
             table.setAttribute('data-hypercells-loading-edge-pages', loading_edge_pages);
             table.setAttribute('data-hypercells-context-class', context_class);
+            table.setAttribute('data-hypercells-transmitted-fields', transmitted_fields);
             table.setAttribute('data-hypercells-loading', false);
             for(const page_num in pages) {
                 const page = pages[page_num];
                 const existing_tbody = hc_get_page(table, page_num);
                 if(existing_tbody === null) {
                     let new_page_el = hc_create_page(page_num, css_classes);
-                    hc_replace_page(new_page_el, page, context_class, css_classes);
+                    hc_replace_page(new_page_el, page, context_class, css_classes, transmitted_fields);
                     hc_insert_page_at_end(table, new_page_el);
                 } else {
-                    hc_replace_page(existing_tbody, page, context_class, css_classes);
+                    hc_replace_page(existing_tbody, page, context_class, css_classes, transmitted_fields);
                 }
             }
             if(container !== undefined && old_current_page_start > current_page_start) {
