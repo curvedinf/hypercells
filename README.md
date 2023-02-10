@@ -173,7 +173,7 @@ Hypercells provides this template as a way to hook into the javascript
 of the cell creation process. Internally this tag is used as the body of the
 `hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num)` 
 javascript function defined in `hypercells_js.html`. It is used to create
-the innerHTML of each TD tag in the hypercells component.
+the innerHTML of each TD tag in the hypercells instance.
 
 ### `hypercells_loader.html`
 
