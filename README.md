@@ -131,7 +131,7 @@ capable of scrolling and generating scroll events. For this reason, if you are
 adding the table inside a div, adding `style="height: 100vh; overflow-y: scroll;"`
 or similar is required.
 
-### `{% hypercells_js "hypercells/" context %}`
+### `{% hypercells_js "hypercells/" optional_context %}`
 
 Renders the django template that contains the javascript necessary to render
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
