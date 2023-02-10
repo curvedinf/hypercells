@@ -35,7 +35,7 @@ def hypercells_table(context, hc_context):
         template_filename,
         {
             "context": hc_context,
-            "field_names": hc_context.get_field_verbose_names(),
+            "field_names": hc_context.get_ordered_field_verbose_names(),
         },
     )
 

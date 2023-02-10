@@ -45,6 +45,7 @@ def create(
     displayed_fields=[],
     hidden_fields=[],
     transmitted_fields=[],
+    field_order=[],
     css_classes={
         "table": "table table-responsive table-hover",
         "thead": "",
@@ -92,6 +93,7 @@ def create(
             "displayed_fields": displayed_fields,
             "hidden_fields": hidden_fields,
             "transmitted_fields": transmitted_fields,
+            "field_order": field_order,
             "css_classes": css_classes,
             "display_thead": display_thead,
             "enforce_security": enforce_security,
@@ -117,7 +119,7 @@ def view(uid, current_page, request):
     if current_page < 0:
         raise ValueError("current_page must not be negative")
 
-    context = models.Context.objects.get(uid=uid)
+    context = models.Context.objects.select_related("generated_by").get(uid=uid)
     context.save()
 
     if not context.has_permissions(request):
@@ -149,6 +151,7 @@ def view(uid, current_page, request):
         "loading_edge_pages": context.loading_edge_pages,
         "css_classes": context.css_classes,
         "transmitted_fields": context.transmitted_fields,
+        "field_order": context.field_order,
         "pages": pages,
     }
 

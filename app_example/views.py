@@ -17,20 +17,24 @@ def basic(request):
 
 
 def multiple(request):
-    qs = Person.objects.all().order_by("first_name", "last_name")[:10000]
+    qs = Person.objects.all().order_by("last_name", "first_name")[:10000]
 
     context = hypercells.lib.create(
         qs,
         uid=hypercells.lib.create_uid_from_user(request, "first-last"),
         displayed_fields=["first_name", "last_name"],
+        field_order=["last_name", "first_name"],
         enforce_security=True,
         request=request,
     )
+
+    qs2 = Person.objects.all().order_by("company_name", "email")[:10000]
     context2 = hypercells.lib.create(
-        qs,
+        qs2,
         uid=hypercells.lib.create_uid_from_user(request, "ignore-first-last"),
         hidden_fields=["first_name", "last_name"],
         transmitted_fields=["first_name", "last_name"],
+        field_order=["company_name", "email"],
         display_thead=False,
     )
 

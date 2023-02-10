@@ -18,6 +18,7 @@ class Context(models.Model):
     displayed_fields = models.JSONField()
     hidden_fields = models.JSONField()
     transmitted_fields = models.JSONField()
+    field_order = models.JSONField()
     css_classes = models.JSONField()
     enforce_security = models.BooleanField()
     generated_by = models.ForeignKey(
@@ -47,20 +48,37 @@ class Context(models.Model):
             ]
         else:
             return_fields = [field for field in fields if field.name != "id"]
-        
+
         if len(self.transmitted_fields) > 0:
             extra_fields = [
                 field
                 for field in fields
-                if (field.name in self.transmitted_fields) and (field.name not in return_fields)
+                if (field.name in self.transmitted_fields)
+                and (field.name not in return_fields)
             ]
             return_fields.extend(extra_fields)
-        
+
         return return_fields
 
     def get_field_verbose_names(self):
         fields = self.get_fields()
         return [field.verbose_name for field in fields]
+
+    def get_ordered_field_verbose_names(self):
+        fields = self.get_fields()
+        preordered_fields = {}
+        unordered_fields = []
+        for field in fields:
+            if field.name in self.field_order:
+                preordered_fields[field.name] = field
+            else:
+                unordered_fields.append(field)
+        ordered_fields = []
+        for field_name in self.field_order:
+            if field_name in preordered_fields:
+                ordered_fields.append(preordered_fields[field_name])
+        ordered_fields.extend(unordered_fields)
+        return [field.verbose_name for field in ordered_fields]
 
     def get_field_names(self):
         fields = self.get_fields()
