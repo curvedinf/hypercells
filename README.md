@@ -142,10 +142,15 @@ Renders the django template that contains the javascript necessary to render
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
 
 The template tag takes a required string, which is the urlpath root of the hypercells API
-you configured in your urls.py. If you intend to extend any hypercells
-templates, you must include optional_context, which is a hypercells context
-object with the appropriate template overloads. Otherwise optional_context
-can be excluded.
+you configured in your urls.py.
+
+If you intend to extend any javascript hypercells templates, you must include optional_context, 
+which is a hypercells context object with the appropriate template overloads. Otherwise 
+optional_context can be excluded. Note that because you have only one hypercells_js 
+tag per page, your javascript template overloads can not be specific for each context, and
+must be for the entire page. This may not be obvious because a context is passed
+in to provide the templates. Putting the template overloads in the context was a design decision
+to keep the template extension system unified and clean on the python side.
 
 Note: `hypercells_js` is best included at the bottom of your `<body>` tag but can be placed
 anywhere a `<script>` tag can be used.
