@@ -54,3 +54,11 @@ def hypercells_td_js(context, hc_context=None):
         hc_context, hypercells.lib.HC_TEMPLATE_TD_JS
     )
     return render_template_to_string(context, template_filename, {})
+
+
+@register.simple_tag(takes_context=True)
+def hypercells_tr_js(context, hc_context=None):
+    template_filename = hypercells.lib.get_template_from_context(
+        hc_context, hypercells.lib.HC_TEMPLATE_TR_JS
+    )
+    return render_template_to_string(context, template_filename, {})

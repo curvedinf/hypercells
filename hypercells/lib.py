@@ -15,12 +15,14 @@ HC_TEMPLATE_JS = "js"
 HC_TEMPLATE_TABLE = "table"
 HC_TEMPLATE_LOADER = "loader"
 HC_TEMPLATE_TD_JS = "td_js"
+HC_TEMPLATE_TR_JS = "tr_js"
 
 HC_DEFAULT_TEMPLATES = {
     HC_TEMPLATE_JS: "hypercells_js.html",
     HC_TEMPLATE_TABLE: "hypercells_table.html",
     HC_TEMPLATE_LOADER: "hypercells_loader.html",
     HC_TEMPLATE_TD_JS: "hypercells_td_js.html",
+    HC_TEMPLATE_TR_JS: "hypercells_tr_js.html",
 }
 
 
@@ -58,6 +60,7 @@ def create(
         HC_TEMPLATE_TABLE: None,
         HC_TEMPLATE_LOADER: None,
         HC_TEMPLATE_TD_JS: None,
+        HC_TEMPLATE_TR_JS: None,
     },
 ):
     """

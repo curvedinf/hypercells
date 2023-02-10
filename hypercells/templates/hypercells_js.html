@@ -20,8 +20,12 @@ window.onload = function(event) {
         return table.parentNode;
     }
     
-    function hc_generate_td_innerHTML(field_name, fields, td_el, tbody_el, context_class, css_classes) {
+    function hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num) {
         {% hypercells_td_js %}
+    }
+    
+    function hc_tr_customization(tr_el, fields, tbody_el, context_class, row_num) {
+        {% hypercells_tr_js %}
     }
     
     function hc_split_css_classes(css_classes_string) {
@@ -53,9 +57,10 @@ window.onload = function(event) {
                 td.setAttribute('data-hypercells-column', field_name);
                 td.classList.add('hypercells-td');
                 hc_apply_css_classes(td, 'tbody_td', css_classes);
-                td.innerHTML = hc_generate_td_innerHTML(field_name, row.fields, td, page_tbody, context_class, css_classes);
+                td.innerHTML = hc_generate_td_innerHTML(td, field_name, row.fields, page_tbody, context_class, row_num);
                 tr.appendChild(td);
             }
+            hc_tr_customization(tr, row.fields, page_tbody, context_class, row_num);
             row_array.push(tr);
         }
         page_tbody.replaceChildren(...row_array);

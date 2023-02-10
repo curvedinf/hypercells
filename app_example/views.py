@@ -7,16 +7,14 @@ import hypercells.lib
 
 
 def index(request):
-    return render(
-        request, "templates/index.html", {}
-    )
+    return render(request, "templates/index.html", {})
+
 
 def basic(request):
     qs = Person.objects.all()
     context = hypercells.lib.create(qs)
-    return render(
-        request, "templates/basic.html", {"context": context}
-    )
+    return render(request, "templates/basic.html", {"context": context})
+
 
 def multiple(request):
     qs = Person.objects.all().order_by("first_name", "last_name")[:10000]

@@ -69,7 +69,7 @@ And finally add the template tags to your template:
 
 ## Documentation
 
-### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[], hidden_fields=[], css_classes={...}, enforce_security=False, request=None)`
+### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[...], hidden_fields=[...], css_classes={...}, enforce_security=False, request=None, templates={...})`
 
 Creates or replaces a hypercells context in the database. A context stores 
 the configuration for a hypercells instance, including the queryset that 
@@ -98,6 +98,9 @@ a context. Note: Contexts owned by anonymous users will have API security disabl
 since it is impossible to authenticate them.
 - `request`: Optional. If enforce_security is enabled, this argument is required. It is used to get the
 current user to store in the context.
+- `templates`: Optional. A dict of template overrides for the default hypercells templates. Available template keys are defined in
+`hypercells.lib`: `HC_TEMPLATE_JS`, `HC_TEMPLATE_TABLE`, `HC_TEMPLATE_LOADER`, `HC_TEMPLATE_TD_JS`, `HC_TEMPLATE_TR_JS`. 
+For instance: `templates={HC_TEMPLATE_TR_JS: "custom_tr_js",}`.
 
 ### `hypercells.lib.create_uid_from_user(request, location_identifier)`
 
