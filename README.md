@@ -115,7 +115,7 @@ prevent cluttering your database.
 Deletes all contexts older than the provided arguments. This should be used in a regularly occurring task
 so old contexts do not accumulate.
 
-### Built-in Template Tags
+## Built-in Template Tags
 
 Each of hypercells' built-in templates is rendered using a matching custom 
 template tag.
