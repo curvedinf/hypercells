@@ -90,17 +90,17 @@ the scroll must be before the client begins requesting a new set of data.
 - `displayed_fields`: Optional. A list of strings that name which fields of `queryset` to display.
 - `hidden_fields`: Optional. A list of strings that name which fields of `queryset` to hide. This is mutually exclusive to `displayed_fields`,
 with `displayed_fields` having priority.
-- `css_classes`: Optional. Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
-'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. A dictionary of css classes to add to various
-elements of the table.
+- `css_classes`: Optional. A dictionary of css classes to add to various elements of the table. 
+Default value: `{'table': 'table table-responsive table-hover', 'thead': '', 'thead_tr': '',
+'thead_th': '', 'tbody': '', 'tbody_tr': '', 'tbody_td': '',}`. 
 - `enforce_security`: Optional. If enabled, the API will only respond to requests from the user which created
 a context. Note: Contexts owned by anonymous users will have API security disabled, 
 since it is impossible to authenticate them.
 - `request`: Optional. If enforce_security is enabled, this argument is required. It is used to get the
-current user to store in the context.
+current user for the context.
 - `templates`: Optional. A dict of template overrides for the default hypercells templates. Available template keys are defined in
 `hypercells.lib`: `HC_TEMPLATE_JS`, `HC_TEMPLATE_TABLE`, `HC_TEMPLATE_LOADER`, `HC_TEMPLATE_TD_JS`, `HC_TEMPLATE_TR_JS`. 
-For instance: `templates={HC_TEMPLATE_TR_JS: "custom_tr_js",}`.
+Example usage: `templates={HC_TEMPLATE_TR_JS: "custom_tr_js.html",}`.
 
 ### `hypercells.lib.create_uid_from_user(request, location_identifier)`
 
@@ -115,10 +115,15 @@ prevent cluttering your database.
 Deletes all contexts older than the provided arguments. This should be used in a regularly occurring task
 so old contexts do not accumulate.
 
+### Built-in Template Tags
+
+Each of hypercells' built-in templates is rendered using a matching custom 
+template tag.
+
 ### `{% hypercells_table context %}`
 
-This template tag renders a django template that contains the HTML necessary to render
-a new hypercells table. Each `hypercells_table` tag must include a context created by
+Renders the hypercells_table template that contains the HTML for a new hypercells table. 
+Each `hypercells_table` tag must include a context created by
 `hypercells.lib.create`. Do not share contexts for multiple `hypercells_tables` tags.
 
 Additionally, the `hypercells_table` must be placed as a child of an HTML element
@@ -126,18 +131,58 @@ capable of scrolling and generating scroll events. For this reason, if you are
 adding the table inside a div, adding `style="height: 100vh; overflow-y: scroll;"`
 or similar is required.
 
-### `{% hypercells_js "hypercells/" %}`
+### `{% hypercells_js "hypercells/" context %}`
 
-This template tag renders a django template that contains the javascript necessary to render
+Renders the django template that contains the javascript necessary to render
 all hypercells tables on a page. Only use one instance of `hypercells_js` on a page.
-The template tag takes one string, which is the urlpath root of the hypercells API
-you configured in your urls.py.
 
-`hypercells_js` is best included at the bottom of your `<body>` tag but can be placed
+The template tag takes a required string, which is the urlpath root of the hypercells API
+you configured in your urls.py. If you intend to extend any hypercells
+templates, you must include optional_context, which is a hypercells context
+object with the appropriate template overloads. Otherwise optional_context
+can be excluded.
+
+Note: `hypercells_js` is best included at the bottom of your `<body>` tag but can be placed
 anywhere a `<script>` tag can be used.
 
 ## Extending Hypercells
 
-The default hypercells interface is display-only and has no interactive features
-other than scrolling. It is possible to add interactivity and other features
-to hypercells by extending the built-in templates.
+It is possible to add interactivity and other features to hypercells by extending the 
+built-in templates. To do this, create a new template in your app's template directory
+and pass it into your hypercells context. For example: 
+`create(..., templates={HC_TEMPLATE_TR_JS: "my_template.html"})`.
+
+### `hypercells_tr_js.html`
+
+Hypercells provides this template as a way to hook into the javascript
+of the row creation process. Internally this tag is used as the body of the
+`hc_tr_customization(tr_el, fields, tbody_el, context_class, row_num)` javascript
+function defined in `hypercells_js.html`. It can be used to define any events 
+or other per-row code and is called after a row is created, but before 
+the row is added to the table (pre-render). Several other arguments are passed into the
+scope that should allow you to do just about anything with the row.
+
+### `hypercells_td_js.html`
+
+Hypercells provides this template as a way to hook into the javascript
+of the cell creation process. Internally this tag is used as the body of the
+`hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num)` 
+javascript function defined in `hypercells_js.html`. It is used to create
+the innerHTML of each TD tag in the hypercells component.
+
+### `hypercells_loader.html`
+
+Hypercells uses this template internally to create the HTML for the animation 
+used on loading pages prior to information being received. It can be extended
+to replace the animation with a custom one.
+
+### `hypercells_table.html`
+
+Hypercells uses this tag to create the HTML for each hypercells table. It
+can be extended to format the table in a custom way.
+
+### `hypercells_js.html`
+
+Hypercells uses this tag to create the javascript that is used for all
+hypercells instances on a page. Ultimately, you can rewrite the javascript
+completely to your needs by extending this.

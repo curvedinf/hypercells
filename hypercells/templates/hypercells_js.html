@@ -21,11 +21,11 @@ window.onload = function(event) {
     }
     
     function hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num) {
-        {% hypercells_td_js %}
+        {% hypercells_td_js context %}
     }
     
     function hc_tr_customization(tr_el, fields, tbody_el, context_class, row_num) {
-        {% hypercells_tr_js %}
+        {% hypercells_tr_js context %}
     }
     
     function hc_split_css_classes(css_classes_string) {
@@ -246,5 +246,5 @@ window.onload = function(event) {
 </script>
 
 <div style="display: none;">
-    {% hypercells_loader %}
+    {% hypercells_loader context %}
 </div>

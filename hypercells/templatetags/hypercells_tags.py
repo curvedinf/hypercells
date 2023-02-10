@@ -21,7 +21,7 @@ def hypercells_js(context, url_prefix, hc_context=None):
         hc_context, hypercells.lib.HC_TEMPLATE_JS
     )
     return render_template_to_string(
-        context, template_filename, {"url_prefix": url_prefix}
+        context, template_filename, {"url_prefix": url_prefix, "context": hc_context}
     )
 
 
