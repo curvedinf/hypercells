@@ -85,10 +85,11 @@ Open a terminal in the project root directory and run:
 
 ## Project Notes
 
-The example project in this github is a standard django project with two django apps.
+The example project in this repository is a standard django project with two django apps.
 The project's name is `project_example`, and the two apps are `app_example` and
 `hypercells`. The `hypercells` app is designed to be portable into your project
-to provide the infinite scroll functionality.
+to provide the infinite scroll functionality. The `app_example` app is designed
+to showcase how to use hypercells.
 
 ## Documentation
 
