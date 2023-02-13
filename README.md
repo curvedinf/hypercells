@@ -67,6 +67,22 @@ And finally add the template tags to your template:
         </body>
     </html>
 
+## Running the Example Project
+
+### Dependencies
+
+* Django 4.1
+* Python 3.10
+* Django Debug Toolbar - install with `pip install django-debug-toolbar`
+
+### Running
+
+Open a terminal in the project root directory and run:
+
+    python3 manage.py migrate
+    python3 manage.py loaddata misc/us-10000.csv.json
+    python3 manage.py runserver
+
 ## Documentation
 
 ### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[...], hidden_fields=[...], transmitted_fields=[...], field_order=[...], css_classes={...}, enforce_security=False, request=None, templates={...})`

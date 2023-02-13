@@ -46,6 +46,8 @@ entries = []
 #     import pdb ; pdb.set_trace( )
 
 for i, row in enumerate(reader):
+    # if i > 10001:
+    #    break
     if not header_row:
         header_row = row
         continue

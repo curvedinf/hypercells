@@ -41,3 +41,30 @@ def multiple(request):
     return render(
         request, "templates/multiple.html", {"context": context, "context2": context2}
     )
+
+
+def card(request):
+    qs = Person.objects.all().order_by("last_name", "first_name")
+
+    context = hypercells.lib.create(
+        qs,
+        uid=hypercells.lib.create_uid_from_user(request, "card"),
+        displayed_fields=["last_name"],
+        transmitted_fields=[
+            "first_name",
+            "last_name",
+            "company_name",
+            "address",
+            "city",
+            "county",
+            "state",
+            "zip",
+            "phone1",
+            "phone2",
+            "email",
+            "web",
+        ],
+        enforce_security=True,
+        request=request,
+        display_thead=False,
+    )

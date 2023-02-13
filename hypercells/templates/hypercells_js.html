@@ -42,12 +42,15 @@ window.onload = function(event) {
         }
     }
     
-    function hc_replace_page(page_tbody, page, context_class, css_classes, transmitted_fields, field_order) {
+    function hc_replace_page(page_tbody, page, context_class, css_classes, transmitted_fields, field_order, page_num, page_length) {
         page_tbody.classList.add('hypercells-page-active');
         page_tbody.classList.remove('hypercells-page-inactive');
         let row_array = [];
         for(const row_num in page) {
-            const row = page[row_num];
+            let row = page[row_num];
+            row['page_num'] = page_num;
+            row['page_length'] = page_length;
+            row['row_num'] = row_num + page_num * page_length;
             let tr = document.createElement('tr');
             tr.setAttribute('data-hypercells-row-pk', row.pk);
             tr.classList.add('hypercells-tr');
@@ -173,10 +176,10 @@ window.onload = function(event) {
                 const existing_tbody = hc_get_page(table, page_num);
                 if(existing_tbody === null) {
                     let new_page_el = hc_create_page(page_num, css_classes);
-                    hc_replace_page(new_page_el, page, context_class, css_classes, transmitted_fields, field_order);
+                    hc_replace_page(new_page_el, page, context_class, css_classes, transmitted_fields, field_order, page_num, page_length);
                     hc_insert_page_at_end(table, new_page_el);
                 } else {
-                    hc_replace_page(existing_tbody, page, context_class, css_classes, transmitted_fields, field_order);
+                    hc_replace_page(existing_tbody, page, context_class, css_classes, transmitted_fields, field_order, page_num, page_length);
                 }
             }
             if(container !== undefined && old_current_page_start > current_page_start) {
