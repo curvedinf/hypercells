@@ -32,6 +32,7 @@ def get_template_from_context(context, template_name):
     template_filename = context.templates.get(template_name, None)
     if template_filename is None or template_filename == "":
         return HC_DEFAULT_TEMPLATES[template_name]
+    return template_filename
 
 
 def create(
@@ -79,7 +80,7 @@ def create(
             raise ValueError("If enforce_security is enabled, request must be provided")
         if not request.user.is_anonymous:
             generated_by = request.user
-
+    
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={

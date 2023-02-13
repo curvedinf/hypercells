@@ -1,8 +1,8 @@
 {% load hypercells_tags %}
 
 // This javascript is inserted inside hypercells_js.html in
-// hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num)
+// hc_generate_td_innerHTML(td_el, field_name, row, tbody_el, context_class)
 
 // It must return a string that will be used as the innerHTML in every data cell
 
-return fields[field_name];
+return row.fields[field_name];

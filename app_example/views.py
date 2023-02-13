@@ -43,13 +43,12 @@ def multiple(request):
     )
 
 
-def card(request):
+def cards(request):
     qs = Person.objects.all().order_by("last_name", "first_name")
 
     context = hypercells.lib.create(
         qs,
         uid=hypercells.lib.create_uid_from_user(request, "card"),
-        displayed_fields=["last_name"],
         transmitted_fields=[
             "first_name",
             "last_name",
@@ -67,4 +66,14 @@ def card(request):
         enforce_security=True,
         request=request,
         display_thead=False,
+        templates={
+            hypercells.lib.HC_TEMPLATE_TR_JS: "cards_tr_js.html"
+        },
+        css_classes={
+           "table": "table table-responsive table-borderless"
+        },
+    )
+
+    return render(
+        request, "templates/cards.html", {"context": context}
     )

@@ -141,7 +141,7 @@ prevent cluttering your database.
 
 ### `hypercells.lib.delete_old_contexts(days=0, hours=8, minutes=0)`
 
-Deletes all contexts older than the provided arguments. This should be used in a regularly occurring task
+Deletes all contexts older than the provided arguments. This should be called in a regularly occurring task
 so old contexts do not accumulate.
 
 ## Built-in Template Tags
@@ -190,7 +190,7 @@ and pass it into your hypercells context. For example:
 
 Hypercells provides this template as a way to hook into the javascript
 of the row creation process. Internally this tag is used as the body of the
-`hc_tr_customization(tr_el, fields, tbody_el, context_class, row_num)` javascript
+`hc_tr_customization(tr_el, row, tbody_el, context_class)` javascript
 function defined in `hypercells_js.html`. It can be used to define any events 
 or other per-row code and is called after a row is created, but before 
 the row is added to the table (pre-render). Several other arguments are passed into the
@@ -200,7 +200,7 @@ scope that should allow you to do just about anything with the row.
 
 Hypercells provides this template as a way to hook into the javascript
 of the cell creation process. Internally this tag is used as the body of the
-`hc_generate_td_innerHTML(td_el, field_name, fields, tbody_el, context_class, row_num)` 
+`hc_generate_td_innerHTML(td_el, field_name, row, tbody_el, context_class)` 
 javascript function defined in `hypercells_js.html`. It is used to create
 the innerHTML of each TD tag in the hypercells instance.
 
@@ -220,3 +220,8 @@ can be extended to format the table in a custom way.
 Hypercells uses this tag to create the javascript that is used for all
 hypercells instances on a page. Ultimately, you can rewrite the javascript
 completely to your needs by extending this.
+
+## Support
+
+If you have any issues while using hypercells, please lodge a 
+[GitHub issue](https://github.com/curvedinf/hypercells/issues).
