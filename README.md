@@ -71,8 +71,8 @@ And finally add the template tags to your template:
 
 ### Dependencies
 
-* Django 4.1
-* Python 3.10
+* Python (tested with 3.10)
+* Django (tested with 4.1)
 * Django Debug Toolbar - install with `pip install django-debug-toolbar`
 
 ### Running
