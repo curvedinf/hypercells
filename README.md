@@ -83,6 +83,13 @@ Open a terminal in the project root directory and run:
     python3 manage.py loaddata misc/us-10000.csv.json
     python3 manage.py runserver
 
+## Project Notes
+
+The example project in this github is a standard django project with two django apps.
+The project's name is `project_example`, and the two apps are `app_example` and
+`hypercells`. The `hypercells` app is designed to be portable into your project
+to provide the infinite scroll functionality.
+
 ## Documentation
 
 ### `hypercells.lib.create(queryset, uid=None, display_thead=True, context_class="", num_pages=10, page_length=100, loading_edge_pages=3, displayed_fields=[...], hidden_fields=[...], transmitted_fields=[...], field_order=[...], css_classes={...}, enforce_security=False, request=None, templates={...})`
