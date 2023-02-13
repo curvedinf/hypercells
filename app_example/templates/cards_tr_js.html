@@ -1,10 +1,5 @@
-{% load hypercells_tags %}
-
 // This javascript is inserted inside hypercells_js.html in
 // hc_tr_customization(tr_el, row, tbody_el, context_class, row_num, page_num, page_length)
-
-// No return value is required. You can use this section to customize
-// per-row events and other interaction.
 
 let td = document.createElement('td');
 let h = '<div class="card">';
@@ -12,8 +7,7 @@ h += '<div class="card-img-top text-center p-3 text-light align-middle" style="b
 h += '<div class="card-body">';
 h += '<h5 class="card-title">'+row.fields['first_name']+' '+row.fields['last_name']+' ('+(row['row_num']+1)+')</h5>';
 h += '<p class="card-text text-muted">'+row.fields['company_name']+' &mdash; '+row.fields['city']+', '+row.fields['state']+'</p>';
-h += '<a href="#" class="btn btn-outline-primary">View Profile</a>';
+h += '<a class="btn btn-outline-primary btn-view-profile">View Profile</a>';
 h += '</div></div>';
-console.log(row.fields);
 td.innerHTML = h;
 tr_el.appendChild(td);

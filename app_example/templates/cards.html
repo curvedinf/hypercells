@@ -10,7 +10,9 @@
     </head>
     
     <body>
-        <div class="col-10 mx-auto overflow-scroll" style="height: 100vh">
+        <div class="col-12 mx-auto overflow-scroll px-5" style="height: 100vh">
+            <h1 class="my-3">Search Results</h1>
+            <hr>
             {% hypercells_table context %}
         </div>
         {% hypercells_js "hypercells/" context %}
