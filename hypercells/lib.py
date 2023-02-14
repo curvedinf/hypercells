@@ -160,7 +160,7 @@ def view(uid, current_page, request):
 
 
 def delete_old_contexts(days=0, hours=8, minutes=0):
-    time_ago = datetime.now() - timedelta(days=days, hours=hours, minutes=minutes)
+    time_ago = timezone.now() - timedelta(days=days, hours=hours, minutes=minutes)
     models.Context.objects.filter(timestamp__lte=time_ago).delete()
 
 
