@@ -1,8 +1,8 @@
 import json
+from datetime import datetime
 
 from django.http import HttpResponse
 from django.core.exceptions import BadRequest
-
 from hypercells import lib
 
 
@@ -22,4 +22,13 @@ def get(request):
 
     pages = lib.view(uid, page, request)
 
-    return HttpResponse(json.dumps(pages), content_type="application/json")
+    class DatetimeEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            return super().default(obj)
+
+    return HttpResponse(
+        json.dumps(pages, cls=DatetimeEncoder), 
+        content_type="application/json"
+    )

@@ -1,16 +1,69 @@
-import sys
-import pickle
-import uuid
 import datetime
+import pickle
+import sys
+import uuid
+import json
 
-from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.core.exceptions import BadRequest
 from django.test import RequestFactory, TestCase
+from django.utils import timezone
 
 from hypercells import lib, models, views
 
+
 class LibTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser")
+        self.qs = User.objects.all()
+        self.context = lib.create(self.qs)
+        self.factory = RequestFactory()
+
+    def test_valid_request(self):
+        request = self.factory.get(views.get, {"uid": self.context.uid, "page": "0"})
+        response = views.get(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["content-type"], "application/json")
+
+        pages = json.loads(response.content)
+        self.assertIsInstance(pages, dict)
+        self.assertIn("context_class", pages)
+        self.assertIn("total_pages", pages)
+        self.assertIn("num_pages", pages)
+        self.assertIn("page_length", pages)
+        self.assertIn("loading_edge_pages", pages)
+        self.assertIn("css_classes", pages)
+        self.assertIn("transmitted_fields", pages)
+        self.assertIn("field_order", pages)
+        self.assertIn("pages", pages)
+
+    def test_missing_uid(self):
+        request = self.factory.get(views.get, {"page": "0"})
+        with self.assertRaises(BadRequest):
+            views.get(request)
+
+    def test_missing_page(self):
+        request = self.factory.get(views.get, {"uid": "abc123"})
+        with self.assertRaises(BadRequest):
+            views.get(request)
+
+    def test_invalid_page(self):
+        request = self.factory.get(views.get, {"uid": "abc123", "page": "foo"})
+        with self.assertRaises(BadRequest):
+            views.get(request)
+
+    def test_negative_page(self):
+        request = self.factory.get(views.get, {"uid": "abc123", "page": "-1"})
+        with self.assertRaises(BadRequest):
+            views.get(request)
+
+    def test_view_raises_exception(self):
+        request = self.factory.get(views.get, {"uid": "nonexistent_uid", "page": "0"})
+        with self.assertRaises(lib.models.Context.DoesNotExist):
+            views.get(request)
+
     def test_create_with_queryset(self):
         queryset = models.Context.objects.all()
         result = lib.create(queryset)
@@ -49,11 +102,6 @@ class LibTestCase(TestCase):
         }
         result = lib.create(queryset, templates=templates)
         self.assertEqual(result.templates, templates)
-        
-    def setUp(self):
-        self.user = User.objects.create_user(username="testuser")
-        self.qs = User.objects.all()
-        self.context = lib.create(self.qs)
         
     def test_view_with_valid_context(self):
         request = RequestFactory().get(views.get)

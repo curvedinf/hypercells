@@ -1,0 +1,5 @@
+#!/bin/sh
+
+python3 -m coverage run --branch --source "hypercells" manage.py test -v 2
+python3 -m coverage report --show-missing --skip-empty
+python3 -m coverage erase
