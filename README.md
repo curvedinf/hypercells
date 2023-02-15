@@ -17,6 +17,19 @@ has been given to optimize the way Hypercells uses a QuerySet to maximize
 performance for complex lookups. By default Hypercells provides a column and row 
 view, but it is configurable to meet virtually any requirement.
 
+## Features
+
+* Easy to drop into existing projects
+* Multiple hypercells instances can be on a page at once
+* Automatically detects and displays all fields of a Django Model, but has options
+to hide fields, or even transmit some fields but not render them (useful for javascript)
+* Fields can be displayed in a custom order
+* Infinite scroll can be cleaner and simpler than pagination
+* Custom CSS classes can be added to all elements
+* Hypercells provides an easy way to extend all the templates used to render the scroller,
+enabling alternate views like cards and rich rows
+* The templating system can be used to add javascript interactivity to each row or cell
+
 ## Live Demo
 
 [Click here](https://djangoist.com/hypercells/) to view a live demo of this project.
@@ -178,7 +191,10 @@ optional_context can be excluded. Note that because you have only one hypercells
 tag per page, your javascript template overloads can not be specific for each context, and
 must be for the entire page. This may not be obvious because a context is passed
 in to provide the templates. Putting the template overloads in the context was a design decision
-to keep the template extension system unified and clean on the python side.
+to keep the template extension system unified and clean on the python side. To implement
+different javascript features for different contexts, utilize the `context_class`
+variable passed into the template-defined functions to create cases for each
+instance on a page.
 
 Note: `hypercells_js` is best included at the bottom of your `<body>` tag but can be placed
 anywhere a `<script>` tag can be used.
@@ -193,7 +209,7 @@ and pass it into your hypercells context. For example:
 ### `hypercells_tr_js.html`
 
 Hypercells provides this template as a way to hook into the javascript
-of the row creation process. Internally this tag is used as the body of the
+of the row creation process. Internally this template is used as the body of the
 `hc_tr_customization(tr_el, row, tbody_el, context_class)` javascript
 function defined in `hypercells_js.html`. It can be used to define any events 
 or other per-row code and is called after a row is created, but before 
