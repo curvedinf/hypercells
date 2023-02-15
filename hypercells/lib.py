@@ -1,8 +1,8 @@
-'''
+"""
 Copyright 2023 Djangoist.com 
 Distributed publicly under the CC BY-NC-ND 4.0 license
 https://creativecommons.org/licenses/by-nc-nd/4.0/
-'''
+"""
 
 import math
 import pickle
@@ -86,7 +86,7 @@ def create(
             raise ValueError("If enforce_security is enabled, request must be provided")
         if not request.user.is_anonymous:
             generated_by = request.user
-    
+
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={

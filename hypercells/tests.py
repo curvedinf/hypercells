@@ -1,8 +1,8 @@
-'''
+"""
 Copyright 2023 Djangoist.com 
 Distributed publicly under the CC BY-NC-ND 4.0 license
 https://creativecommons.org/licenses/by-nc-nd/4.0/
-'''
+"""
 
 import datetime
 import pickle
@@ -74,7 +74,7 @@ class LibTestCase(TestCase):
         queryset = models.Context.objects.all()
         result = lib.create(queryset)
         self.assertIsInstance(result, models.Context)
-        
+
     def test_create_with_uid(self):
         uid = str(uuid.uuid4())
         queryset = models.Context.objects.all()
@@ -85,7 +85,7 @@ class LibTestCase(TestCase):
         queryset = models.Context.objects.all()
         result = lib.create(queryset, display_thead=False)
         self.assertEqual(result.display_thead, False)
-        
+
     def test_create_with_enforce_security(self):
         request = RequestFactory().get("/")
         request.user = User.objects.create_user(
@@ -96,7 +96,7 @@ class LibTestCase(TestCase):
         queryset = models.Context.objects.all()
         result = lib.create(queryset, enforce_security=True, request=request)
         self.assertEqual(result.generated_by, request.user)
-    
+
     def test_create_with_templates(self):
         queryset = models.Context.objects.all()
         templates = {
@@ -108,12 +108,12 @@ class LibTestCase(TestCase):
         }
         result = lib.create(queryset, templates=templates)
         self.assertEqual(result.templates, templates)
-        
+
     def test_view_with_valid_context(self):
         request = RequestFactory().get(views.get)
         result = lib.view(self.context.uid, 0, request)
         self.assertIsInstance(result, dict)
-        
+
     def test_view_with_negative_current_page(self):
         request = RequestFactory().get(views.get)
         with self.assertRaises(ValueError):
@@ -122,10 +122,13 @@ class LibTestCase(TestCase):
     def test_delete_old_contexts(self):
         models.Context.objects.all().delete()
         context = lib.create(User.objects.all())
-        models.Context.objects.filter(pk=context.pk).update(timestamp=timezone.now() - datetime.timedelta(minutes=10))
+        models.Context.objects.filter(pk=context.pk).update(
+            timestamp=timezone.now() - datetime.timedelta(minutes=10)
+        )
         lib.delete_old_contexts(days=0, hours=0, minutes=1)
         count = models.Context.objects.count()
         self.assertEqual(count, 0)
+
 
 class ContextModelTests(TestCase):
     def setUp(self):
@@ -158,13 +161,21 @@ class ContextModelTests(TestCase):
         self.assertEqual(context.display_thead, self.context_data["display_thead"])
         self.assertEqual(context.num_pages, self.context_data["num_pages"])
         self.assertEqual(context.page_length, self.context_data["page_length"])
-        self.assertEqual(context.loading_edge_pages, self.context_data["loading_edge_pages"])
-        self.assertEqual(context.displayed_fields, self.context_data["displayed_fields"])
+        self.assertEqual(
+            context.loading_edge_pages, self.context_data["loading_edge_pages"]
+        )
+        self.assertEqual(
+            context.displayed_fields, self.context_data["displayed_fields"]
+        )
         self.assertEqual(context.hidden_fields, self.context_data["hidden_fields"])
-        self.assertEqual(context.transmitted_fields, self.context_data["transmitted_fields"])
+        self.assertEqual(
+            context.transmitted_fields, self.context_data["transmitted_fields"]
+        )
         self.assertEqual(context.field_order, self.context_data["field_order"])
         self.assertEqual(context.css_classes, self.context_data["css_classes"])
-        self.assertEqual(context.enforce_security, self.context_data["enforce_security"])
+        self.assertEqual(
+            context.enforce_security, self.context_data["enforce_security"]
+        )
         self.assertEqual(context.generated_by, self.context_data["generated_by"])
         self.assertEqual(context.templates, self.context_data["templates"])
 
@@ -202,7 +213,11 @@ class ContextModelTests(TestCase):
         context_data_without_security["uid"] = "test-uid2"
         context_data_without_security["enforce_security"] = False
 
-        context_with_security = models.Context.objects.create(**context_data_with_security)
-        context_without_security = models.Context.objects.create(**context_data_without_security)
+        context_with_security = models.Context.objects.create(
+            **context_data_with_security
+        )
+        context_without_security = models.Context.objects.create(
+            **context_data_without_security
+        )
 
         request_with_user = self.client.request().wsgi_request

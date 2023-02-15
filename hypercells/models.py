@@ -1,8 +1,8 @@
-'''
+"""
 Copyright 2023 Djangoist.com 
 Distributed publicly under the CC BY-NC-ND 4.0 license
 https://creativecommons.org/licenses/by-nc-nd/4.0/
-'''
+"""
 
 import string, sys
 
@@ -68,7 +68,10 @@ class Context(models.Model):
 
     def get_field_verbose_names(self):
         fields = self.get_fields()
-        return [field.verbose_name if hasattr(field, "verbose_name") else field.name for field in fields]
+        return [
+            field.verbose_name if hasattr(field, "verbose_name") else field.name
+            for field in fields
+        ]
 
     def get_ordered_field_verbose_names(self):
         fields = self.get_fields()
@@ -84,7 +87,10 @@ class Context(models.Model):
             if field_name in preordered_fields:
                 ordered_fields.append(preordered_fields[field_name])
         ordered_fields.extend(unordered_fields)
-        return [field.verbose_name if hasattr(field, "verbose_name") else field.name for field in ordered_fields]
+        return [
+            field.verbose_name if hasattr(field, "verbose_name") else field.name
+            for field in ordered_fields
+        ]
 
     def get_field_names(self):
         fields = self.get_fields()

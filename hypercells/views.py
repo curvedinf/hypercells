@@ -1,8 +1,8 @@
-'''
+"""
 Copyright 2023 Djangoist.com 
 Distributed publicly under the CC BY-NC-ND 4.0 license
 https://creativecommons.org/licenses/by-nc-nd/4.0/
-'''
+"""
 
 import json
 from datetime import datetime
@@ -35,6 +35,5 @@ def get(request):
             return super().default(obj)
 
     return HttpResponse(
-        json.dumps(pages, cls=DatetimeEncoder), 
-        content_type="application/json"
+        json.dumps(pages, cls=DatetimeEncoder), content_type="application/json"
     )

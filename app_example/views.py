@@ -1,8 +1,8 @@
-'''
+"""
 Copyright 2023 Djangoist.com 
 Distributed publicly under the CC BY-NC-ND 4.0 license
 https://creativecommons.org/licenses/by-nc-nd/4.0/
-'''
+"""
 
 from django.shortcuts import render
 from django.core import serializers
@@ -72,14 +72,8 @@ def cards(request):
         enforce_security=True,
         request=request,
         display_thead=False,
-        templates={
-            hypercells.lib.HC_TEMPLATE_TR_JS: "cards_tr_js.html"
-        },
-        css_classes={
-           "table": "table table-responsive table-borderless"
-        },
+        templates={hypercells.lib.HC_TEMPLATE_TR_JS: "cards_tr_js.html"},
+        css_classes={"table": "table table-responsive table-borderless"},
     )
 
-    return render(
-        request, "templates/cards.html", {"context": context}
-    )
+    return render(request, "templates/cards.html", {"context": context})
