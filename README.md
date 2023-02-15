@@ -17,6 +17,10 @@ has been given to optimize the way Hypercells uses a QuerySet to maximize
 performance for complex lookups. By default Hypercells provides a column and row 
 view, but it is configurable to meet virtually any requirement.
 
+## Live Demo
+
+[Click here](https://djangoist.com/hypercells/) to view a live demo of this project.
+
 ## Quick Look
 
 Adding Hypercells to your app is as easy as dropping the hypercells app

@@ -1,11 +1,8 @@
-"""
-ASGI config for project_example project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
-"""
+'''
+Copyright 2023 Djangoist.com 
+Distributed publicly under the CC BY-NC-ND 4.0 license
+https://creativecommons.org/licenses/by-nc-nd/4.0/
+'''
 
 import os
 
