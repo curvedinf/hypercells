@@ -7,7 +7,19 @@ h += '<div class="card-img-top text-center p-3 text-light align-middle" style="b
 h += '<div class="card-body">';
 h += '<h5 class="card-title">'+row.fields['first_name']+' '+row.fields['last_name']+' ('+(row['row_num']+1)+')</h5>';
 h += '<p class="card-text text-muted">'+row.fields['company_name']+' &mdash; '+row.fields['city']+', '+row.fields['state']+'</p>';
-h += '<a class="btn btn-outline-primary btn-view-profile">View Profile</a>';
+h += '<button class="btn-profile btn btn-outline-primary btn-view-profile" data-bs-toggle="modal" data-bs-target="#modal">View Profile</button>';
 h += '</div></div>';
 td.innerHTML = h;
 tr_el.appendChild(td);
+let btn = td.querySelector('button.btn-view-profile');
+btn.onclick = function() {
+    let modal = document.querySelector('#modal');
+    modal.querySelector('#modal-label').innerHTML = row.fields['first_name']+' '+row.fields['last_name'];
+    modal.querySelector('#company').innerHTML = row.fields['company_name'];
+    modal.querySelector('#address').innerHTML = row.fields['address'] + '<br>' + row.fields['city'] + ', ' + row.fields['state'] + ' ' + row.fields['zip'];
+    modal.querySelector('#county').innerHTML = row.fields['county'];
+    modal.querySelector('#phone1').innerHTML = row.fields['phone1'];
+    modal.querySelector('#phone2').innerHTML = row.fields['phone2'];
+    modal.querySelector('#email').innerHTML = row.fields['email'];
+    modal.querySelector('#web').innerHTML = row.fields['web'];
+};
