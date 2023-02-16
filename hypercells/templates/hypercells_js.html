@@ -151,7 +151,6 @@ window.onload = function(event) {
                 transmitted_fields,
                 field_order,
             } = data;
-            
             // for pages outside of the new data, either set placeholders or remove
             if(old_current_page_start !== undefined) {
                 if(old_current_page_start < current_page_start) {
@@ -196,8 +195,14 @@ window.onload = function(event) {
                 container.dispatchEvent(new CustomEvent('scroll'));
             }
         }).catch(function(error) {
+            // If there is an error, attempt to retry the request after 1 second.
+            // The delay prevents request flooding.
             console.error('Hypercells error:', error);
-            table.setAttribute('data-hypercells-loading', false);
+            wait = new Promise(function(resolve) {setTimeout(resolve, 1000)});
+            wait.then(function() {
+                table.setAttribute('data-hypercells-loading', false);
+                container.dispatchEvent(new CustomEvent('scroll'));
+            });
         });
     }
     
