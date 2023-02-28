@@ -17,6 +17,7 @@ class Context(models.Model):
     model_module = models.CharField(max_length=300)
     model_class = models.CharField(max_length=100)
     query = models.BinaryField()
+    hmac = models.BinaryField()
     display_thead = models.BooleanField()
     num_pages = models.IntegerField()
     page_length = models.IntegerField()

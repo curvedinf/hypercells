@@ -8,12 +8,15 @@ import math
 import pickle
 import uuid
 from datetime import datetime, timedelta
+import hmac
+import hashlib
 
 from django.urls import path
 from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.core.serializers import serialize
 from django.core.exceptions import SuspiciousOperation
+from django.conf import settings
 
 from hypercells import models, views
 
@@ -87,13 +90,20 @@ def create(
         if not request.user.is_anonymous:
             generated_by = request.user
 
+    secret_key = getattr(settings, "SECRET_KEY", "NOTSECURE")
+    query_data = pickle.dumps(queryset.query)
+    hmac_digest = hmac.new(
+        secret_key.encode("utf-8"), query_data, hashlib.sha256
+    ).digest()
+
     context, created = models.Context.objects.update_or_create(
         uid=f"{uid}",
         defaults={
             "model_module": f"{queryset.model.__module__}",
             "model_class": f"{queryset.model.__qualname__}",
             "context_class": context_class,
-            "query": pickle.dumps(queryset.query),
+            "query": query_data,
+            "hmac": hmac_digest,
             "num_pages": num_pages,
             "page_length": page_length,
             "loading_edge_pages": loading_edge_pages,
@@ -123,14 +133,26 @@ def get_page_from_row(context, row):
 
 
 def view(uid, current_page, request):
+    """
+    Retrieves a set of pages from a context instance.
+    """
     if current_page < 0:
         raise ValueError("current_page must not be negative")
 
     context = models.Context.objects.select_related("generated_by").get(uid=uid)
-    context.save()
 
     if not context.has_permissions(request):
         raise SuspiciousOperation("User does not have access to hypercells context")
+
+    query_data = context.query
+    secret_key = getattr(settings, "SECRET_KEY", "NOTSECURE")
+    hmac_digest = hmac.new(
+        secret_key.encode("utf-8"), query_data, hashlib.sha256
+    ).digest()
+    if not hmac.compare_digest(hmac_digest, context.hmac):
+        raise SuspiciousOperation(
+            "HMAC signature does not match. This context may have been tampered with."
+        )
 
     model = context.derive_model_class()
 
@@ -138,7 +160,7 @@ def view(uid, current_page, request):
     start = current_page * context.page_length
     end = start + length
     qs = model.objects.all()
-    qs.query = pickle.loads(context.query)
+    qs.query = pickle.loads(query_data)
     total_pages = qs.count()
     qs = qs[start:end]
 
@@ -149,6 +171,9 @@ def view(uid, current_page, request):
     for i in range(0, context.num_pages):
         page = instances[i * context.page_length : (i + 1) * context.page_length]
         pages[current_page + i] = page
+
+    # Save to refresh the timestamp
+    context.save()
 
     data = {
         "context_class": context.context_class,
